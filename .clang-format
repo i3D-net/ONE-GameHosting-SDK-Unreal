@@ -1,0 +1,16 @@
+# C++ clang-format configuration
+
+BasedOnStyle: Google
+Standard: Cpp11
+IndentWidth: 4
+ColumnLimit: 90
+AccessModifierOffset: -4
+SortIncludes: false
+SortUsingDeclarations: false
+BreakConstructorInitializers : BeforeComma
+BreakConstructorInitializersBeforeComma: true
+KeepEmptyLinesAtTheStartOfBlocks: true
+IndentPPDirectives: BeforeHash
+AllowShortFunctionsOnASingleLine: Empty
+PointerAlignment: Right
+DerivePointerAlignment: false
