@@ -1,8 +1,10 @@
 ﻿#pragma once
 
+#include <one/game/parsing.h>
+
 #include <functional>
 #include <mutex>
-#include <string>
+#include <array>
 
 //----------------------------------------------
 // One SDK object types forward declarations
@@ -67,7 +69,7 @@ public:
         error,
         unknown
     };
-    static std::string status_to_string(Status status);
+    static const char* status_to_string(Status status);
     Status status() const;
 
     //---------------
@@ -78,10 +80,10 @@ public:
 
         int players;          // Game number of players.
         int max_players;      // Game max number of players.
-        std::string name;     // Server name.
-        std::string map;      // Game map.
-        std::string mode;     // Game mode.
-        std::string version;  // Game version.
+        std::array<char, codec::value_max_size_null_terminated()> name;     // Server name.
+        std::array<char, codec::value_max_size_null_terminated()> map;      // Game map.
+        std::array<char, codec::value_max_size_null_terminated()> mode;     // Game mode.
+        std::array<char, codec::value_max_size_null_terminated()> version;  // Game version.
 
         // Add extra custom game-specific properties here, if needed. Then
         // these need to be added to a OneObjectPtr in the implementation
@@ -136,9 +138,9 @@ public:
     struct MetaDataData {
         MetaDataData() : map(), mode(), type() {}
 
-        std::string map;
-        std::string mode;
-        std::string type;  // Game type example, e.g. solo vs squads.
+        std::array<char, codec::value_max_size_null_terminated()> map;
+        std::array<char, codec::value_max_size_null_terminated()> mode;
+        std::array<char, codec::value_max_size_null_terminated()> type;  // Game type example, e.g. solo vs squads.
     };
     // Allows the game server to be notified of an incoming Metadata message.
     void set_metadata_callback(
@@ -153,7 +155,7 @@ public:
 
         int id;
         int server_id;
-        std::string server_name;
+        std::array<char, codec::value_max_size_null_terminated()> server_name;
         // ... add members as needed.
     };
     // Allows the game server to be notified of an incoming Host Information message.
@@ -167,7 +169,7 @@ public:
     struct ApplicationInstanceInformationData {
         ApplicationInstanceInformationData() : fleet_id(), host_id(0), is_virtual(0) {}
 
-        std::string fleet_id;
+        std::array<char, codec::value_max_size_null_terminated()> fleet_id;
         int host_id;
         bool is_virtual;
         // ... add members as needed.

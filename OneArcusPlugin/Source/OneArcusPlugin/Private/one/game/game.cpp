@@ -1,11 +1,12 @@
 #include <one/game/game.h>
 
+#include <one/arcus/c_platform.h>
+
 #include <assert.h>
 #include <ctime>
-#include <string>
-#include <sstream>
+#include <stdio.h>
 
-#include <one/game/log.h>
+#include <CoreMinimal.h>
 
 namespace one_integration {
 
@@ -80,9 +81,12 @@ Game::~Game() {
     _one_server.shutdown();
 }
 
-bool Game::init(unsigned int port, int max_players, const std::string &name,
-                const std::string &map, const std::string &mode,
-                const std::string &version, seconds delay) {
+bool Game::init(unsigned int port, int max_players,
+                const std::array<char, codec::value_max_size_null_terminated()> &name,
+                const std::array<char, codec::value_max_size_null_terminated()> &map,
+                const std::array<char, codec::value_max_size_null_terminated()> &mode,
+                const std::array<char, codec::value_max_size_null_terminated()> &version,
+                seconds delay) {
     const std::lock_guard<std::mutex> lock(_game);
 
     std::srand(std::time(nullptr));
@@ -94,7 +98,7 @@ bool Game::init(unsigned int port, int max_players, const std::string &name,
     OneServerWrapper::AllocationHooks hooks(allocation::alloc, allocation::free,
                                             allocation::realloc);
     if (!_one_server.init(port, hooks)) {
-        L_ERROR("failed to init one server");
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: failed to init one server"));
         return false;
     }
 
@@ -160,34 +164,34 @@ void Game::alter_game_state() {
     switch (_matchmaking_status) {
         case MatchmakingStatus::none:
             if (!_quiet) {
-                L_INFO("application instance status none");
+                UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: application instance status none"));
             }
             _one_server.set_application_instance_status(
                 OneServerWrapper::ApplicationInstanceStatus::starting);
             break;
         case MatchmakingStatus::starting:
             if (!_quiet && new_matchmaking_status) {
-                L_INFO("application instance status starting");
+                UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: application instance status starting"));
             }
             _one_server.set_application_instance_status(
                 OneServerWrapper::ApplicationInstanceStatus::online);
             break;
         case MatchmakingStatus::online:
             if (!_quiet && new_matchmaking_status) {
-                L_INFO("application instance status online");
+                UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: application instance status online"));
             }
             _one_server.set_application_instance_status(
                 OneServerWrapper::ApplicationInstanceStatus::online);
             break;
         case MatchmakingStatus::allocated:
             if (!_quiet && new_matchmaking_status) {
-                L_INFO("application instance status allocated");
+                UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: application instance status allocated"));
             }
             _one_server.set_application_instance_status(
                 OneServerWrapper::ApplicationInstanceStatus::allocated);
             break;
         default:
-            L_ERROR("invalid matchmaking status");
+            UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: invalid matchmaking status"));
     }
 }
 
@@ -197,7 +201,7 @@ void Game::update() {
     if (_is_exit_time_enabled) {
         const auto time_zero = steady_clock::time_point(steady_clock::duration::zero());
         if (_exit_time != time_zero && steady_clock::now() > _exit_time) {
-            L_INFO("ending process as a delayed response to a soft stop request");
+            UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: ending process as a delayed response to a soft stop request"));
             exit(0);
         }
     }
@@ -208,13 +212,13 @@ void Game::update() {
 void Game::update_startup() {
     switch (_matchmaking_status) {
         case MatchmakingStatus::none:
-            L_INFO("matchmaking status: starting");
+            UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: matchmaking status: starting"));
             _matchmaking_status = MatchmakingStatus::starting;
             _started_time = steady_clock::now();
             return;
         case MatchmakingStatus::starting:
             if (_transition_delay < steady_clock::now() - _started_time) {
-                L_INFO("matchamking status: online");
+                UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: matchamking status: online"));
                 _matchmaking_status = MatchmakingStatus::online;
             }
             return;
@@ -222,7 +226,7 @@ void Game::update_startup() {
         case MatchmakingStatus::allocated:
             return;
         default:
-            L_ERROR("invalid matchmaking status");
+            UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: invalid matchmaking status"));
     }
 }
 
@@ -232,7 +236,7 @@ void Game::update_match() {
             return;
         case MatchStatus::joining:
             if (_players == _max_players) {
-                L_INFO("maximum number of player reached");
+                UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: maximum number of player reached"));
                 _match_start_time = steady_clock::now();
                 set_match_status(MatchStatus::playing);
                 return;
@@ -242,13 +246,13 @@ void Game::update_match() {
             return;
         case MatchStatus::playing:
             if (_match_duration < steady_clock::now() - _match_start_time) {
-                L_INFO("match duration has elapsed");
+                UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: match duration has elapsed"));
                 set_match_status(MatchStatus::leaving);
             }
             return;
         case MatchStatus::leaving:
             if (_players == 0) {
-                L_INFO("all player have left.");
+                UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: all player have left"));
                 set_match_status(MatchStatus::none);
                 _matchmaking_status = MatchmakingStatus::online;
                 return;
@@ -322,22 +326,20 @@ void Game::set_player_count(int count) {
 void Game::soft_stop_callback(int timeout, void *userdata) {
     auto game = reinterpret_cast<Game *>(userdata);
     if (game == nullptr) {
-        L_ERROR("null userdata");
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: null userdata"));
         return;
     }
 
     // A real game would schedule a graceful process shutdown here.
     if (!game->is_quiet()) {
-        L_INFO("soft stop called");
-        L_INFO("\ttimeout:" + std::to_string(timeout));
+        UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: soft stop called:"));
+        UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: \ttimeout: %i"), timeout);
     }
 
     if (game->_is_exit_time_enabled) {
         auto delay_seconds = std::rand() % (2 * timeout);
         game->_exit_time = steady_clock::now() + seconds(delay_seconds);
-        std::ostringstream stream;
-        stream << "will shut down process in seconds: " << delay_seconds;
-        L_INFO(stream.str().c_str());
+        UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: will shut down process in seconds: %i"), delay_seconds);
     }
     game->_soft_stop_receive_count++;
 }
@@ -346,21 +348,21 @@ void Game::allocated_callback(const OneServerWrapper::AllocatedData &data,
                               void *userdata) {
     auto game = reinterpret_cast<Game *>(userdata);
     if (game == nullptr) {
-        L_ERROR("null userdata");
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: null userdata"));
         return;
     }
 
     switch (game->_matchmaking_status) {
         case MatchmakingStatus::online:
-            L_INFO("game is ready to process allocated messsage.");
+            UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: game is ready to process allocated messsage"));
             break;
         case MatchmakingStatus::allocated:
-            L_INFO("game is already allocated: skipping allocated message.");
+            UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: game is already allocated: skipping allocated message"));
             return;
         case MatchmakingStatus::none:
         case MatchmakingStatus::starting:
         default:
-            L_INFO("game is not ready to process allocated: skipping allocated message.");
+            UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: game is not ready to process allocated: skipping allocated message"));
             return;
     }
 
@@ -368,13 +370,9 @@ void Game::allocated_callback(const OneServerWrapper::AllocatedData &data,
     // set its Application Instance Status to allocated when ready to accept
     // players.
     if (!game->is_quiet()) {
-        L_INFO("allocated called:");
-        std::ostringstream stream;
-        stream << "\tplayers:" << data.players;
-        L_INFO(stream.str().c_str());
-        stream.clear();
-        stream << "\tduration:" << data.duration;
-        L_INFO(stream.str().c_str());
+        UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: allocated called:"));
+        UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: \tplayers: %i"), data.players);
+        UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: \tduration: %i"), data.duration);
     }
 
     game->_allocated_receive_count++;
@@ -389,15 +387,15 @@ void Game::allocated_callback(const OneServerWrapper::AllocatedData &data,
 void Game::metadata_callback(const OneServerWrapper::MetaDataData &data, void *userdata) {
     auto game = reinterpret_cast<Game *>(userdata);
     if (game == nullptr) {
-        L_ERROR("null game");
+        UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: null game"));
         return;
     }
     // A real game would apply the metadata here to the server.
     if (!game->is_quiet()) {
-        L_INFO("meta data called:");
-        L_INFO("\tmap:" + data.map);
-        L_INFO("\tmode:" + data.mode);
-        L_INFO("\ttype:" + data.type);
+        UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: meta data called:"));
+        UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: \tmap: %s"), *FString(data.map.data()));
+        UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: \tmode: %s"), *FString(data.mode.data()));
+        UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: \ttype: %s"), *FString(data.type.data()));
     }
 
     game->_metadata_receive_count++;
@@ -407,17 +405,17 @@ void Game::host_information_callback(const OneServerWrapper::HostInformationData
                                      void *userdata) {
     auto game = reinterpret_cast<Game *>(userdata);
     if (game == nullptr) {
-        L_ERROR("null game");
+        UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: null game"));
         return;
     }
 
     // A real game can read host fields here, for example to post server name
     // information in the UI for the player to see.
     if (!game->is_quiet()) {
-        L_INFO("host information called:");
-        L_INFO("\tid:" + std::to_string(data.id));
-        L_INFO("\tserver id:" + std::to_string(data.server_id));
-        L_INFO("\tserver name:" + data.server_name);
+        UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: host information called:"));
+        UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: \tid: %i"), data.id);
+        UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: \tserver id: %i"), data.server_id);
+        UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: \tserver name: %s"), *FString(data.server_name.data()));
     }
 
     game->_host_information_receive_count++;
@@ -427,16 +425,16 @@ void Game::application_instance_information_callback(
     const OneServerWrapper::ApplicationInstanceInformationData &data, void *userdata) {
     auto game = reinterpret_cast<Game *>(userdata);
     if (game == nullptr) {
-        L_ERROR("null game");
+        UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: null game"));
         return;
     }
 
     // A real game could use information here for debugging or other purposes.
     if (!game->is_quiet()) {
-        L_INFO("application instance information called:");
-        L_INFO("\tfleet id:" + data.fleet_id);
-        L_INFO("\thost id:" + std::to_string(data.host_id));
-        L_INFO("\tis virtual:" + std::to_string(data.is_virtual));
+        UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: application instance information called:"));
+        UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: \tfleet id: %s"), *FString(data.fleet_id.data()));
+        UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: \thost id: %i"), data.host_id);
+        UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: \tis virutal: %s"), *FString(data.is_virtual ? "true" : "false"));
     }
 
     game->_application_instance_information_receive_count++;
