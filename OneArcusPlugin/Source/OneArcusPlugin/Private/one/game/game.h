@@ -1,10 +1,11 @@
 #pragma once
 
 #include <one/game/one_server_wrapper.h>
+#include <one/game/parsing.h>
 
 #include <chrono>
 #include <functional>
-#include <string>
+#include <array>
 #include <mutex>
 
 using namespace std::chrono;
@@ -32,8 +33,11 @@ public:
     //------------
     // Life cycle.
 
-    bool init(unsigned int port, int max_players, const std::string &name,
-              const std::string &map, const std::string &mode, const std::string &version,
+    bool init(unsigned int port, int max_players, 
+              const std::array<char, codec::value_max_size_null_terminated()> &name,
+              const std::array<char, codec::value_max_size_null_terminated()> &map,
+              const std::array<char, codec::value_max_size_null_terminated()> &mode, 
+              const std::array<char, codec::value_max_size_null_terminated()> &version,
               seconds delay);
     void shutdown();
 
@@ -121,10 +125,10 @@ private:
 
     // Current game state.
     int _players;
-    std::string _name;
-    std::string _map;
-    std::string _mode;
-    std::string _version;
+    std::array<char, codec::value_max_size_null_terminated()> _name;
+    std::array<char, codec::value_max_size_null_terminated()> _map;
+    std::array<char, codec::value_max_size_null_terminated()> _mode;
+    std::array<char, codec::value_max_size_null_terminated()> _version;
 
     // A planned time to exit the process, configured as a response to a
     // soft_stop message from the ONE Platform.

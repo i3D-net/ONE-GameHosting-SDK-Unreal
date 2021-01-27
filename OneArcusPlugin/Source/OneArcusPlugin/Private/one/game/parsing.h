@@ -2,11 +2,9 @@
 
 #include <one/arcus/c_api.h>
 #include <one/arcus/c_error.h>
-#include <one/game/log.h>
 
 #include <array>
 #include <functional>
-#include <string>
 
 // Forward declarations for One SDK object types.
 struct OneArray;
@@ -55,8 +53,9 @@ class Parsing final {
 public:
     static bool extract_key_value_payload(
         const OneArrayPtr array,
-        std::function<bool(const size_t total_number_of_keys, const std::string &key,
-                           const std::string &value)>
+        std::function<bool(const size_t total_number_of_keys,
+                           const std::array<char, codec::key_max_size_null_terminated()> &key,
+                           const std::array<char, codec::value_max_size_null_terminated()> &value)>
             callback);
 
     static bool extract_key_value_pair(
@@ -68,12 +67,12 @@ public:
                                        std::function<bool(void)> callback);
 
     static bool extract_string(const OneObjectPtr object, const char *key,
-                               std::function<bool(const std::string &value)> callback);
+                               std::function<bool(const std::array<char, codec::value_max_size_null_terminated()> &)> callback);
 
 private:
     static std::array<char, codec::key_max_size_null_terminated()> _key;
     static std::array<char, codec::value_max_size_null_terminated()> _value;
-    static std::array<char, codec::string_buffer_max_size()> _string_buffer;
+    static std::array<char, codec::string_buffer_null_terminated()> _string_buffer;
 
     Parsing() = delete;
     ~Parsing() = delete;

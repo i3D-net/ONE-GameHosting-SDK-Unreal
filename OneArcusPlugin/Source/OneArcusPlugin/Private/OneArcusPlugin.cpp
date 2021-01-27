@@ -6,16 +6,9 @@
 
 #define LOCTEXT_NAMESPACE "FOneArcusPluginModule"
 
-void FOneArcusPluginModule::StartupModule()
-{
-    one_integration::Game game;
+void FOneArcusPluginModule::StartupModule() {}
 
-    game.init(90000, 16, "test_name", "test_map", "test_mode", "test_version", std::chrono::seconds(10));
-}
-
-void FOneArcusPluginModule::ShutdownModule()
-{
-}
+void FOneArcusPluginModule::ShutdownModule() {}
 
 #undef LOCTEXT_NAMESPACE
 	

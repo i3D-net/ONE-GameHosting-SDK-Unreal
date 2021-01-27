@@ -1,13 +1,14 @@
 #include <one/game/one_server_wrapper.h>
 
-#include <assert.h>
-#include <string>
-#include <cstring>
-
 #include <one/arcus/c_api.h>
 #include <one/arcus/c_error.h>
-#include <one/game/log.h>
 #include <one/game/parsing.h>
+
+#include <assert.h>
+#include <cstring>
+#include <cstdlib>
+
+#include <CoreMinimal.h>
 
 namespace one_integration {
 namespace {
@@ -18,22 +19,17 @@ std::function<void(void *)> _free = nullptr;
 std::function<void *(void *, size_t)> _realloc = nullptr;
 
 // Logger to pass into One.
-void log(void *userdata, OneLogLevel level, const char *message) {
-    // userdata not used in this wrapper, but could point to instance of a logger
-    // instead of a global logger.
-
-    switch (level) {
-        case ONE_LOG_LEVEL_INFO: {
-            L_INFO(std::string("ONELOG: ") + message);
-            break;
-        }
-        case ONE_LOG_LEVEL_ERROR: {
-            L_ERROR(std::string("ONELOG: ") + message);
-            break;
-        }
-        default: {
-            L_ERROR(std::string("ONELOG: unknown log level: ") + message);
-        }
+void log(void *, OneLogLevel level, const char *message) {
+    switch (level)
+    {
+    case ONE_LOG_LEVEL_INFO:
+        UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: %s"), *FString(message));
+        break;
+    case ONE_LOG_LEVEL_ERROR:
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), *FString(message));
+    break;
+    default:
+        break;
     }
 }
 
@@ -60,7 +56,7 @@ bool OneServerWrapper::init(unsigned int port, const AllocationHooks &hooks) {
     const std::lock_guard<std::mutex> lock(_wrapper);
 
     if (_server != nullptr) {
-        L_ERROR("already initialized");
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: already initialized"));
         return false;
     }
 
@@ -95,7 +91,7 @@ bool OneServerWrapper::init(unsigned int port, const AllocationHooks &hooks) {
     // Each game server must have one corresponding arcus server.
     OneError err = one_server_create(port, &_server);
     if (one_is_error(err)) {
-        L_ERROR(one_error_text(err));
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), one_error_text(err));
         return false;
     }
 
@@ -103,7 +99,7 @@ bool OneServerWrapper::init(unsigned int port, const AllocationHooks &hooks) {
     err = one_server_set_logger(_server, log,
                                 nullptr);  // null userdata as global log is used.
     if (one_is_error(err)) {
-        L_ERROR(one_error_text(err));
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), one_error_text(err));
         return false;
     }
 
@@ -115,36 +111,36 @@ bool OneServerWrapper::init(unsigned int port, const AllocationHooks &hooks) {
     // will be send to your application.
     err = one_server_set_soft_stop_callback(_server, soft_stop, this);
     if (one_is_error(err)) {
-        L_ERROR(one_error_text(err));
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), one_error_text(err));
         return false;
     }
 
     err = one_server_set_allocated_callback(_server, allocated, this);
     if (one_is_error(err)) {
-        L_ERROR(one_error_text(err));
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), one_error_text(err));
         return false;
     }
 
     err = one_server_set_metadata_callback(_server, metadata, this);
     if (one_is_error(err)) {
-        L_ERROR(one_error_text(err));
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), one_error_text(err));
         return false;
     }
 
     err = one_server_set_host_information_callback(_server, host_information, this);
     if (one_is_error(err)) {
-        L_ERROR(one_error_text(err));
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), one_error_text(err));
         return false;
     }
 
     err = one_server_set_application_instance_information_callback(
         _server, application_instance_information, this);
     if (one_is_error(err)) {
-        L_ERROR(one_error_text(err));
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), one_error_text(err));
         return false;
     }
 
-    L_INFO("OneServerWrapper init complete");
+    UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: initialization is complete"));
     return true;
 }
 
@@ -171,12 +167,12 @@ void OneServerWrapper::update(bool quiet) {
     // messages are received.
     OneError err = one_server_update(_server);
     if (one_is_error(err)) {
-        if (!quiet) L_ERROR(one_error_text(err));
+        if (!quiet) UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), one_error_text(err));
         return;
     }
 }
 
-std::string OneServerWrapper::status_to_string(Status status) {
+const char* OneServerWrapper::status_to_string(Status status) {
     switch (status) {
         case Status::uninitialized:
             return "uninitialized";
@@ -201,7 +197,7 @@ OneServerWrapper::Status OneServerWrapper::status() const {
     OneServerStatus status;
     OneError err = one_server_status(_server, &status);
     if (one_is_error(err)) {
-        L_ERROR(one_error_text(err));
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), one_error_text(err));
         return Status::unknown;
     }
     switch (status) {
@@ -230,16 +226,16 @@ void OneServerWrapper::set_game_state(const GameState &state) {
     // OneObjectPtr object;
     // OneError err = one_object_create(&object);
     // if (one_is_error(err)) {
-    //     L_ERROR(one_error_text(err));
+    //     UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), one_error_text(err));
     // }
     // one_object_set_val_int(object, "matchLength", 123);
 
     // The optional object may be passed here as the last variable.
     OneError err = one_server_set_live_state(
-        _server, state.players, state.max_players, state.name.c_str(), state.map.c_str(),
-        state.mode.c_str(), state.version.c_str(), nullptr);
+        _server, state.players, state.max_players, state.name.data(), state.map.data(),
+        state.mode.data(), state.version.data(), nullptr);
     if (one_is_error(err)) {
-        L_ERROR(one_error_text(err));
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), one_error_text(err));
     }
 
     // If custom data was added, then make sure to destroy the object.
@@ -250,7 +246,7 @@ void OneServerWrapper::set_application_instance_status(ApplicationInstanceStatus
     OneError err = one_server_set_application_instance_status(
         _server, (OneApplicationInstanceStatus)status);
     if (one_is_error(err)) {
-        L_ERROR(one_error_text(err));
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), one_error_text(err));
     }
 }
 
@@ -295,13 +291,13 @@ void OneServerWrapper::set_application_instance_information_callback(
 // after a match end).
 void OneServerWrapper::soft_stop(void *userdata, int timeout_seconds) {
     if (userdata == nullptr) {
-        L_ERROR("userdata is nullptr");
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: userdata is nullptr"));
         return;
     }
 
     auto wrapper = reinterpret_cast<OneServerWrapper *>(userdata);
     if (wrapper->_soft_stop_callback == nullptr) {
-        L_INFO("soft stop callback is nullptr");
+        UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: soft stop callback is nullptr"));
         return;
     }
 
@@ -311,12 +307,12 @@ void OneServerWrapper::soft_stop(void *userdata, int timeout_seconds) {
 
 void OneServerWrapper::allocated(void *userdata, void *allocated) {
     if (userdata == nullptr) {
-        L_ERROR("userdata is nullptr");
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: userdata is nullptr"));
         return;
     }
 
     if (allocated == nullptr) {
-        L_ERROR("allocated is nullptr");
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: allocated is nullptr"));
         return;
     }
 
@@ -324,7 +320,7 @@ void OneServerWrapper::allocated(void *userdata, void *allocated) {
     assert(wrapper->_server != nullptr);
 
     if (wrapper->_allocated_callback == nullptr) {
-        L_INFO("allocated callback is nullptr");
+        UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: allocated callback is nullptr"));
         return;
     }
 
@@ -332,7 +328,7 @@ void OneServerWrapper::allocated(void *userdata, void *allocated) {
 
     AllocatedData allocated_payload;
     if (!extract_allocated_payload(array, allocated_payload)) {
-        L_ERROR("failed to extract allocated payload");
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: failed to extract allocated payload"));
         return;
     }
 
@@ -341,12 +337,12 @@ void OneServerWrapper::allocated(void *userdata, void *allocated) {
 
 void OneServerWrapper::metadata(void *userdata, void *metadata) {
     if (userdata == nullptr) {
-        L_ERROR("userdata is nullptr");
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: userdata is nullptr"));
         return;
     }
 
     if (metadata == nullptr) {
-        L_ERROR("metadata is nullptr");
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: metadata is nullptr"));
         return;
     }
 
@@ -354,14 +350,14 @@ void OneServerWrapper::metadata(void *userdata, void *metadata) {
     assert(wrapper->_server != nullptr);
 
     if (wrapper->_metadata_callback == nullptr) {
-        L_INFO("meta data callback is nullptr");
+        UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: meta data callback is nullptr"));
         return;
     }
 
     auto array = reinterpret_cast<OneArrayPtr>(metadata);
     MetaDataData metadata_payload;
     if (!extract_metadata_payload(array, metadata_payload)) {
-        L_ERROR("failed to extract meta data payload");
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: failed to extract meta data payload"));
         return;
     }
 
@@ -370,12 +366,12 @@ void OneServerWrapper::metadata(void *userdata, void *metadata) {
 
 void OneServerWrapper::host_information(void *userdata, void *information) {
     if (userdata == nullptr) {
-        L_ERROR("userdata is nullptr");
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: userdata is nullptr"));
         return;
     }
 
     if (information == nullptr) {
-        L_ERROR("information is nullptr");
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: information is nullptr"));
         return;
     }
 
@@ -383,14 +379,14 @@ void OneServerWrapper::host_information(void *userdata, void *information) {
     assert(wrapper->_server != nullptr);
 
     if (wrapper->_host_information_callback == nullptr) {
-        L_INFO("host information callback is nullptr");
+        UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: host information callback is nullptr"));
         return;
     }
 
     auto object = reinterpret_cast<OneObjectPtr>(information);
     HostInformationData information_payload;
     if (!extract_host_information_payload(object, information_payload)) {
-        L_ERROR("failed to extract host information payload");
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: failed to extract host information payload"));
         return;
     }
 
@@ -401,12 +397,12 @@ void OneServerWrapper::host_information(void *userdata, void *information) {
 void OneServerWrapper::application_instance_information(void *userdata,
                                                         void *information) {
     if (userdata == nullptr) {
-        L_ERROR("userdata is nullptr");
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: userdata is nullptr"));
         return;
     }
 
     if (information == nullptr) {
-        L_ERROR("information is nullptr");
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: information is nullptr"));
         return;
     }
 
@@ -414,18 +410,18 @@ void OneServerWrapper::application_instance_information(void *userdata,
     assert(wrapper->_server != nullptr);
 
     if (wrapper->_application_instance_information_callback == nullptr) {
-        L_INFO("application instance information callback is nullptr");
+        UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: application instance information callback is nullptr"));
         return;
     }
 
     auto object = reinterpret_cast<OneObjectPtr>(information);
     ApplicationInstanceInformationData information_payload;
     if (!extract_application_instance_information_payload(object, information_payload)) {
-        L_ERROR("failed to extract host application instance information payload");
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: failed to extract host application instance information payload"));
         return;
     }
 
-    L_INFO("invoking application instance information callback");
+    UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: invoking application instance information callback"));
     wrapper->_application_instance_information_callback(
         information_payload, wrapper->_application_instance_information_userdata);
 }
@@ -433,37 +429,37 @@ void OneServerWrapper::application_instance_information(void *userdata,
 bool OneServerWrapper::extract_allocated_payload(OneArrayPtr array,
                                                  AllocatedData &allocated_data) {
     if (array == nullptr) {
-        L_ERROR("array is nullptr");
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: array is nullptr"));
         return false;
     }
 
     // Optional - the game can require and read allocated keys to configure
     // the server. This is to mirror the documentation example here:
     // https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#allocated
-    auto callback = [&](const size_t total_number_of_keys, const std::string &key,
-                        const std::string &value) {
+    auto callback = [&](const size_t total_number_of_keys,
+                        const std::array<char, codec::key_max_size_null_terminated()> &key,
+                        const std::array<char, codec::value_max_size_null_terminated()> &value) {
         if (total_number_of_keys != 2) {
-            L_ERROR("got total number of keys(" + std::to_string(total_number_of_keys) +
-                    ") expected 2 instead");
+            UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: expected 2 keys, but received a different number instead"));
             return false;
         }
 
-        if (key == "players") {
-            allocated_data.players = std::stoi(value);
+        if (std::strncmp(key.data(), "players", codec::key_max_size_null_terminated()) == 0) {
+            allocated_data.players = std::atoi(value.data());
             return true;
         }
 
-        if (key == "duration") {
-            allocated_data.duration = std::stoi(value);
+        if (std::strncmp(key.data(), "duration", codec::key_max_size_null_terminated()) == 0) {
+            allocated_data.duration = std::atoi(value.data());
             return true;
         }
 
-        L_ERROR("key(" + key + ") is not handled");
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: key is not handled"));
         return false;
     };
 
     if (!Parsing::extract_key_value_payload(array, callback)) {
-        L_ERROR("failed to extract key/value payload");
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: failed to extract key/value payload"));
         return false;
     }
 
@@ -473,39 +469,39 @@ bool OneServerWrapper::extract_allocated_payload(OneArrayPtr array,
 bool OneServerWrapper::extract_metadata_payload(OneArrayPtr array,
                                                 MetaDataData &metadata) {
     if (array == nullptr) {
-        L_ERROR("array is nullptr");
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: array is nullptr"));
         return false;
     }
 
-    auto callback = [&](const size_t total_number_of_keys, const std::string &key,
-                        const std::string &value) {
+    auto callback = [&](const size_t total_number_of_keys,
+                        const std::array<char, codec::key_max_size_null_terminated()> &key,
+                        const std::array<char, codec::value_max_size_null_terminated()> &value) {
         if (total_number_of_keys != 3) {
-            L_ERROR("got total number of keys(" + std::to_string(total_number_of_keys) +
-                    ") expected 3 instead");
+            UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: expected 3 keys, but received a different number instead"));
             return false;
         }
 
-        if (key == "map") {
+        if (strncmp(key.data(), "map", codec::key_max_size_null_terminated()) == 0) {
             metadata.map = value;
             return true;
         }
 
-        if (key == "mode") {
+        if (strncmp(key.data(), "mode", codec::key_max_size_null_terminated()) == 0) {
             metadata.mode = value;
             return true;
         }
 
-        if (key == "type") {
+        if (strncmp(key.data(), "type", codec::key_max_size_null_terminated()) == 0) {
             metadata.type = value;
             return true;
         }
 
-        L_ERROR("key(" + key + ") is not handled");
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: key is not handled"));
         return false;
     };
 
     if (!Parsing::extract_key_value_payload(array, callback)) {
-        L_ERROR("failed to extract key/value payload");
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: failed to extract key/value payload"));
         return false;
     }
 
@@ -515,27 +511,27 @@ bool OneServerWrapper::extract_metadata_payload(OneArrayPtr array,
 bool OneServerWrapper::extract_host_information_payload(
     OneObjectPtr object, OneServerWrapper::HostInformationData &information) {
     if (object == nullptr) {
-        L_ERROR("object is nullptr.");
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: object is nullptr."));
         return false;
     }
 
     OneError err = one_object_val_int(object, "id", &information.id);
     if (one_is_error(err)) {
-        L_ERROR(one_error_text(err));
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), one_error_text(err));
         return false;
     }
 
     err = one_object_val_int(object, "serverId", &information.server_id);
     if (one_is_error(err)) {
-        L_ERROR(one_error_text(err));
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), one_error_text(err));
         return false;
     }
 
-    if (!Parsing::extract_string(object, "serverName", [&](const std::string &value) {
+    if (!Parsing::extract_string(object, "serverName", [&](const std::array<char, codec::value_max_size_null_terminated()> &value) {
             information.server_name = value;
             return true;
         })) {
-        L_ERROR("failed to extract serverName key");
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: failed to extract serverName key"));
         return false;
     }
 
@@ -548,29 +544,29 @@ bool OneServerWrapper::extract_application_instance_information_payload(
     OneObjectPtr object,
     OneServerWrapper::ApplicationInstanceInformationData &information) {
     if (object == nullptr) {
-        L_ERROR("object is nullptr.");
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: object is nullptr."));
         return false;
     }
 
-    if (!Parsing::extract_string(object, "fleetId", [&](const std::string &value) {
+    if (!Parsing::extract_string(object, "fleetId", [&](const std::array<char, codec::value_max_size_null_terminated()> &value) {
             information.fleet_id = value;
             return true;
         })) {
-        L_ERROR("failed to extract fleetId");
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: failed to extract fleetId"));
         return false;
     }
 
     OneError err = one_object_val_int(object, "hostId", &information.host_id);
     if (one_is_error(err)) {
-        L_ERROR("failed to extract hostId");
-        L_ERROR(one_error_text(err));
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: failed to extract hostId"));
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), one_error_text(err));
         return false;
     }
 
     err = one_object_val_bool(object, "isVirtual", &information.is_virtual);
     if (one_is_error(err)) {
-        L_ERROR("failed to extract isVirtual");
-        L_ERROR(one_error_text(err));
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: failed to extract isVirtual"));
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), one_error_text(err));
         return false;
     }
 
