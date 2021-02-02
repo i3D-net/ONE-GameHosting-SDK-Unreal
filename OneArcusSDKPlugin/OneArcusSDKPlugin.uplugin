@@ -19,7 +19,7 @@
 			"Name": "OneArcusSDKPlugin",
 			"Type": "Runtime",
 			"LoadingPhase": "PreLoadingScreen",
-			"WhitelistPlatforms": [ "Win32", "Win64" ]
+			"WhitelistPlatforms": [ "Win32", "Win64", "Linux" ]
 		}
 	]
 }

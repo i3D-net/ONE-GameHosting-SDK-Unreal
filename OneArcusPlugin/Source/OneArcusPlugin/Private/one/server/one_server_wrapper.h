@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include <one/game/parsing.h>
+#include <one/server/one_parsing.h>
 
 #include <functional>
 #include <mutex>
@@ -69,8 +69,10 @@ public:
         error,
         unknown
     };
-    static const char* status_to_string(Status status);
+    static const char *status_to_string(Status status);
     Status status() const;
+
+    bool quiet() const;
 
     //---------------
     // Arcus setters.
@@ -78,17 +80,19 @@ public:
     struct GameState {
         GameState() : players(0), max_players(0), name(), map(), mode(), version() {}
 
-        int players;          // Game number of players.
-        int max_players;      // Game max number of players.
-        std::array<char, codec::value_max_size_null_terminated()> name;     // Server name.
-        std::array<char, codec::value_max_size_null_terminated()> map;      // Game map.
-        std::array<char, codec::value_max_size_null_terminated()> mode;     // Game mode.
-        std::array<char, codec::value_max_size_null_terminated()> version;  // Game version.
+        int players;      // Game number of players.
+        int max_players;  // Game max number of players.
+        std::array<char, codec::value_max_size_null_terminated()> name;  // Server name.
+        std::array<char, codec::value_max_size_null_terminated()> map;   // Game map.
+        std::array<char, codec::value_max_size_null_terminated()> mode;  // Game mode.
+        std::array<char, codec::value_max_size_null_terminated()>
+            version;  // Game version.
 
         // Add extra custom game-specific properties here, if needed. Then
         // these need to be added to a OneObjectPtr in the implementation
         // and passed to the c_api. See the cpp file for an example.
     };
+
     // Set the game state to the current value. The wrapper uses this to send
     // the current state to the ONE Platform, when requested to do so.
     void set_game_state(const GameState &);
@@ -116,70 +120,34 @@ public:
     void set_soft_stop_callback(std::function<void(int timeout, void *userdata)> callback,
                                 void *userdata);
 
+    // Allows the game server to be notified of an incoming Allocated message.
     // The allocation request has a optional JSON body. The keys and values are definable
     // by the customer. The current values are matching the payload shown in the
     // documentation at:
     // https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#allocated-request
-    struct AllocatedData {
-        AllocatedData() : players(0), duration(0) {}
-
-        int players;   // The number of players.
-        int duration;  // The duration.
-    };
-    // Allows the game server to be notified of an incoming Allocated message.
     void set_allocated_callback(
-        std::function<void(const AllocatedData &data, void *userdata)> callback,
+        std::function<void(const OneArrayPtr data, void *userdata)> callback,
         void *userdata);
 
-    // Game metadata. Contains an optional JSON body with key value
-    // pairs for meta data. The keys and values are definable by the customer.
-    // The current values are matching the payload shown in the documentation at:
+    // The metadate response has a payload as defined at:
     // https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#meta-data-request
-    struct MetaDataData {
-        MetaDataData() : map(), mode(), type() {}
-
-        std::array<char, codec::value_max_size_null_terminated()> map;
-        std::array<char, codec::value_max_size_null_terminated()> mode;
-        std::array<char, codec::value_max_size_null_terminated()> type;  // Game type example, e.g. solo vs squads.
-    };
-    // Allows the game server to be notified of an incoming Metadata message.
     void set_metadata_callback(
-        std::function<void(const MetaDataData &data, void *userdata)> callback,
+        std::function<void(const OneArrayPtr data, void *userdata)> callback,
         void *userdata);
 
+    // Allows the game server to be notified of an incoming Host Information message.
     // The host information response has a payload as defined at:
     // https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#host-information-response
-    // In this example only a handfull of fields are used for simplicity.
-    struct HostInformationData {
-        HostInformationData() : id(0), server_id(0), server_name() {}
-
-        int id;
-        int server_id;
-        std::array<char, codec::value_max_size_null_terminated()> server_name;
-        // ... add members as needed.
-    };
-    // Allows the game server to be notified of an incoming Host Information message.
     void set_host_information_callback(
-        std::function<void(const HostInformationData &data, void *userdata)> callback,
+        std::function<void(const OneObjectPtr data, void *userdata)> callback,
         void *userdata);
 
-    // The application instance information response has a payload as defined at:
-    // https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#applicationinstance-information-response
-    // In this example only a handfull of fields are used for simplicity.
-    struct ApplicationInstanceInformationData {
-        ApplicationInstanceInformationData() : fleet_id(), host_id(0), is_virtual(0) {}
-
-        std::array<char, codec::value_max_size_null_terminated()> fleet_id;
-        int host_id;
-        bool is_virtual;
-        // ... add members as needed.
-    };
     // Allows the game server to be notified of an incoming Application
     // Instance Information message.
+    // The application instance information response has a payload as defined at:
+    // https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#applicationinstance-information-response
     void set_application_instance_information_callback(
-        std::function<void(const ApplicationInstanceInformationData &data,
-                           void *userdata)>
-            callback,
+        std::function<void(const OneObjectPtr data, void *userdata)> callback,
         void *userdata);
 
 private:
@@ -190,18 +158,10 @@ private:
     static void host_information(void *userdata, void *information);
     static void application_instance_information(void *userdata, void *information);
 
-    // Parsing of message payloads.
-    static bool extract_allocated_payload(OneArrayPtr array,
-                                          AllocatedData &allocated_data);
-    static bool extract_metadata_payload(OneArrayPtr array, MetaDataData &metadata);
-    static bool extract_host_information_payload(OneObjectPtr object,
-                                                 HostInformationData &information);
-    static bool extract_application_instance_information_payload(
-        OneObjectPtr object, ApplicationInstanceInformationData &information);
-
     // The Arcus Server itself.
     mutable std::mutex _wrapper;
     OneServerPtr _server;
+    bool _quiet;
 
     //--------------------------------------------------------------------------
     // Callbacks.
@@ -209,16 +169,16 @@ private:
     std::function<void(int, void *)> _soft_stop_callback;
     void *_soft_stop_userdata;
 
-    std::function<void(const AllocatedData &, void *)> _allocated_callback;
+    std::function<void(const OneArrayPtr, void *)> _allocated_callback;
     void *_allocated_userdata;
 
-    std::function<void(const MetaDataData &, void *)> _metadata_callback;
+    std::function<void(const OneArrayPtr, void *)> _metadata_callback;
     void *_metadata_userdata;
 
-    std::function<void(const HostInformationData &, void *)> _host_information_callback;
+    std::function<void(const OneObjectPtr, void *)> _host_information_callback;
     void *_host_information_userdata;
 
-    std::function<void(const ApplicationInstanceInformationData &, void *)>
+    std::function<void(const OneObjectPtr &, void *)>
         _application_instance_information_callback;
     void *_application_instance_information_userdata;
 };
