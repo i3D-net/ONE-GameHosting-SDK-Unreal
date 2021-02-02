@@ -1,4 +1,4 @@
-#include <one/game/parsing.h>
+#include <one/server/one_parsing.h>
 
 #include <stdio.h>
 
@@ -7,10 +7,11 @@
 namespace one_integration {
 
 bool Parsing::extract_key_value_payload(
-    const OneArrayPtr array, std::function<bool(const size_t,
-                           const std::array<char, codec::key_max_size_null_terminated()> &,
-                           const std::array<char, codec::value_max_size_null_terminated()> &)>
-                                 callback) {
+    const OneArrayPtr array,
+    std::function<bool(const size_t,
+                       const std::array<char, codec::key_max_size_null_terminated()> &,
+                       const std::array<char, codec::value_max_size_null_terminated()> &)>
+        callback) {
     if (callback == nullptr) {
         UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: callback is null"));
         return false;
@@ -62,7 +63,8 @@ bool Parsing::extract_key_value_payload(
         }
 
         if (!callback(number_of_keys, _key, _value)) {
-            UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: callback unable to extract key value pair"));
+            UE_LOG(LogTemp, Error,
+                   TEXT("ONE ARCUS: callback unable to extract key value pair"));
             one_object_destroy(pair);
             return false;
         }
@@ -93,7 +95,8 @@ bool Parsing::extract_key_value_pair(
         return false;
     }
 
-    err = one_object_val_string(pair, "key", key.data(), static_cast<unsigned int>(codec::key_max_size()));
+    err = one_object_val_string(pair, "key", key.data(),
+                                static_cast<unsigned int>(codec::key_max_size()));
     if (one_is_error(err)) {
         UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), *FString(one_error_text(err)));
         return false;
@@ -111,11 +114,13 @@ bool Parsing::extract_key_value_pair(
 
     // Because buffer must add the '\0' explicitly.
     if (codec::value_max_size() < value_size + 1) {
-        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: value size is bigger than max value size"));
+        UE_LOG(LogTemp, Error,
+               TEXT("ONE ARCUS: value size is bigger than max value size"));
         return false;
     }
 
-    err = one_object_val_string(pair, "value", value.data(), static_cast<unsigned int>(codec::value_max_size()));
+    err = one_object_val_string(pair, "value", value.data(),
+                                static_cast<unsigned int>(codec::value_max_size()));
     if (one_is_error(err)) {
         UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), *FString(one_error_text(err)));
         return false;
@@ -126,8 +131,10 @@ bool Parsing::extract_key_value_pair(
     return true;
 }
 
-bool Parsing::extract_string(const OneObjectPtr object, const char *key,
-                             std::function<bool(const std::array<char, codec::value_max_size_null_terminated()>&)> callback) {
+bool Parsing::extract_string(
+    const OneObjectPtr object, const char *key,
+    std::function<bool(const std::array<char, codec::value_max_size_null_terminated()> &)>
+        callback) {
     if (object == nullptr) {
         UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: object is null"));
         return false;
@@ -151,8 +158,8 @@ bool Parsing::extract_string(const OneObjectPtr object, const char *key,
         return false;
     }
 
-    err =
-        one_object_val_string(object, key, _string_buffer.data(), static_cast<unsigned int>(_string_buffer.size()));
+    err = one_object_val_string(object, key, _string_buffer.data(),
+                                static_cast<unsigned int>(_string_buffer.size()));
     if (one_is_error(err)) {
         UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), *FString(one_error_text(err)));
         return false;

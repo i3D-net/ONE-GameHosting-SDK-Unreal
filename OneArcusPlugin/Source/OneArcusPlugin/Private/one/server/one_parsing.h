@@ -53,9 +53,10 @@ class Parsing final {
 public:
     static bool extract_key_value_payload(
         const OneArrayPtr array,
-        std::function<bool(const size_t total_number_of_keys,
-                           const std::array<char, codec::key_max_size_null_terminated()> &key,
-                           const std::array<char, codec::value_max_size_null_terminated()> &value)>
+        std::function<
+            bool(const size_t total_number_of_keys,
+                 const std::array<char, codec::key_max_size_null_terminated()> &key,
+                 const std::array<char, codec::value_max_size_null_terminated()> &value)>
             callback);
 
     static bool extract_key_value_pair(
@@ -66,8 +67,11 @@ public:
     static bool extract_object_payload(const OneObjectPtr object,
                                        std::function<bool(void)> callback);
 
-    static bool extract_string(const OneObjectPtr object, const char *key,
-                               std::function<bool(const std::array<char, codec::value_max_size_null_terminated()> &)> callback);
+    static bool extract_string(
+        const OneObjectPtr object, const char *key,
+        std::function<
+            bool(const std::array<char, codec::value_max_size_null_terminated()> &)>
+            callback);
 
 private:
     static std::array<char, codec::key_max_size_null_terminated()> _key;
