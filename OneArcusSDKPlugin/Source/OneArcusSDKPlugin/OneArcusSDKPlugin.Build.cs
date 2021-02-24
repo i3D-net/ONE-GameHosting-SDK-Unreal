@@ -1,7 +1,9 @@
-// Some copyright should be here...
+// Copyright i3D.net, 2021. All Rights Reserved.
+
 using System.IO;
 using UnrealBuildTool;
 
+// One Arcus SDK Plugin build depedencies.
 public class OneArcusSDKPlugin : ModuleRules
 {
 	public OneArcusSDKPlugin(ReadOnlyTargetRules Target) : base(Target)

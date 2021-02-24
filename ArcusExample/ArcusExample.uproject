@@ -1,0 +1,28 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{A2F3C4FC-4C44-2A64-EEE2-34A775AB0AEC}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "ArcusExample",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "OneArcusPlugin",
+			"Enabled": true
+		},
+		{
+			"Name": "OneArcusSDKPlugin",
+			"Enabled": true
+		}
+	],
+	"TargetPlatforms": [
+		"WindowsNoEditor",
+		"WindowsNoEditorWin32",
+		"LinuxNoEditor"
+	]
+}

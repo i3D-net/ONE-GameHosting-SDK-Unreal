@@ -1,3 +1,4 @@
+// Copyright i3D.net, 2021. All Rights Reserved.
 #include "types.h"
 
 namespace i3d {

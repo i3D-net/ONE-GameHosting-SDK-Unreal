@@ -1,3 +1,5 @@
+// Copyright i3D.net, 2021. All Rights Reserved.
+
 #include "one_arcus_object.h"
 
 #include <one/arcus/c_api.h>

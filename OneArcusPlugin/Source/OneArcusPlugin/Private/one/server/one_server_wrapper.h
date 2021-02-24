@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿// Copyright i3D.net, 2021. All Rights Reserved.
+
+#pragma once
 
 #include <one/server/one_parsing.h>
 

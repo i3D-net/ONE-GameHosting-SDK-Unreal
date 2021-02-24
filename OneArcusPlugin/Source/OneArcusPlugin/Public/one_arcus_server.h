@@ -1,3 +1,5 @@
+// Copyright i3D.net, 2021. All Rights Reserved.
+
 #pragma once
 
 #include <one/server/one_server_wrapper.h>
@@ -22,6 +24,10 @@ public:
     void set_quiet(bool quiet) {
         _quiet = quiet;
     }
+
+    // Set quiet to true, in order to the logging off and vice versa.
+    UFUNCTION(BlueprintCallable, Category = "Arcus")
+    int32 parse_command_line_management_port(int32 default_value);
 
     // -------------------------------
     // Life cycle
@@ -50,6 +56,20 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Arcus")
     void set_game_state(int64 players, int64 max_players, FString name, FString map,
                         FString mode, FString version);
+
+    // Set the application instance status to starting.
+    UFUNCTION(BlueprintCallable, Category = "Arcus")
+    void set_application_instance_starting();
+
+    // Set the application instance status to online.
+    // The status is online when the application is started but not yet allocated.
+    UFUNCTION(BlueprintCallable, Category = "Arcus")
+    void set_application_instance_online();
+
+    // Set the application instance status to allocated.
+    // The status is allocated when the application is started and allocated.
+    UFUNCTION(BlueprintCallable, Category = "Arcus")
+    void set_application_instance_allocated();
 
     // Game state
     // -------------------------------

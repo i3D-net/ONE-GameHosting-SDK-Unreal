@@ -1,3 +1,4 @@
+// Copyright i3D.net, 2021. All Rights Reserved.
 #include <one/arcus/internal/health.h>
 #include <one/arcus/message.h>
 #include <one/arcus/opcode.h>

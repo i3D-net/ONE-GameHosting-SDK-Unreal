@@ -1,3 +1,4 @@
+// Copyright i3D.net, 2021. All Rights Reserved.
 #include <one/arcus/internal/socket.h>
 #include <one/arcus/c_platform.h>
 

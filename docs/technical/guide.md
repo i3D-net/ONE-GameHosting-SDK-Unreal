@@ -60,8 +60,17 @@ ${PATH_OF_SDK_PLGUIN_REPOSITORY}/tools/sdk_update.sh ${PATH_OF_SDK_REPOSITORY} $
 ```
 Note: make sure to omit the trailing slash at the end of the path. For example:
 ```bash
-./tools/sdk_update.sh ~/src/one-game-sdk ~/src one-gamehosting-sdk-unreal
+./tools/sdk_update.sh ~/src/one-game-sdk ~/src/one-gamehosting-sdk-unreal
 ```
 4. Commit the changes in the SDK plugin repository.
 
 Note that the update script will update the `${PATH_OF_SDK_PLGUIN_REPOSITORY}/docs/sdk_version.md` automatically.
+
+
+## Arcus Example
+
+To test locally the Arcus Example game server with the local agent:
+
+1. Make sure you have a arcus agent running locally on a port (default port is 19001).
+2. Package the Arcus Example Game Server with Unreal Engine Editor into a folder, in this case: `ArcusExampleWin64`.
+3. Run the executable with the following arguments: `ArcusExampleWin64/WindowsServer/ArcusExampleServer.exe -ManagementPort 19001`.
