@@ -1,3 +1,5 @@
+// Copyright i3D.net, 2021. All Rights Reserved.
+
 #include <one/server/one_parsing.h>
 
 #include <stdio.h>

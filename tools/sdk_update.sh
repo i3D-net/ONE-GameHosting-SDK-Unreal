@@ -31,6 +31,13 @@ cp -r ${ONE_SDK_SOURCE_DIR}/c_api.h ${ONE_PLUGIN_SOURCE_PUBLIC_DIR}
 cp -r ${ONE_SDK_SOURCE_DIR}/c_error.h ${ONE_PLUGIN_SOURCE_PUBLIC_DIR}
 cp -r ${ONE_SDK_SOURCE_DIR}/c_platform.h ${ONE_PLUGIN_SOURCE_PUBLIC_DIR}
 
+# Adding copyright notice
+sed -i '1i// Copyright i3D.net, 2021. All Rights Reserved.' ${ONE_PLUGIN_SOURCE_PRIVATE_DIR}/*.h
+sed -i '1i// Copyright i3D.net, 2021. All Rights Reserved.' ${ONE_PLUGIN_SOURCE_PRIVATE_DIR}/*.cpp
+sed -i '1i// Copyright i3D.net, 2021. All Rights Reserved.' ${ONE_PLUGIN_SOURCE_PRIVATE_DIR}/internal/*.h
+sed -i '1i// Copyright i3D.net, 2021. All Rights Reserved.' ${ONE_PLUGIN_SOURCE_PRIVATE_DIR}/internal/*.cpp
+sed -i '1i// Copyright i3D.net, 2021. All Rights Reserved.' ${ONE_PLUGIN_SOURCE_PUBLIC_DIR}/*.h
+
 # Update the documentation to the lastest SDK version.
 ONE_GIT_HASH=`git --git-dir ${ONE_SDK_REPO_DIR}/.git rev-parse HEAD`
 

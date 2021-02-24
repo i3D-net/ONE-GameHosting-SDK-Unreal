@@ -4,3 +4,9 @@ OneArcusSDKPlugin/Binaries
 OneArcusSDKPlugin/Intermediate
 OneArcusPlugin/Binaries
 OneArcusPlugin/Intermediate
+ArcusExample/Binaries
+ArcusExample/DerivedDataCache
+ArcusExample/Development_Editor
+ArcusExample/Intermediate
+ArcusExample/Saved
+ArcusExample/.vs

@@ -1,3 +1,5 @@
+// Copyright i3D.net, 2021. All Rights Reserved.
+
 #include <one/server/one_server_wrapper.h>
 
 #include <one/arcus/c_api.h>
@@ -101,14 +103,14 @@ bool OneServerWrapper::init(unsigned int port, const AllocationHooks &hooks) {
     // Each game server must have one corresponding arcus server.
     OneError err = one_server_create(port, &_server);
     if (one_is_error(err)) {
-        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), one_error_text(err));
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), *FString(one_error_text(err)));
         return false;
     }
 
     // Set custom logger - optional.
     err = one_server_set_logger(_server, log, this);
     if (one_is_error(err)) {
-        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), one_error_text(err));
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), *FString(one_error_text(err)));
         return false;
     }
 
@@ -120,32 +122,32 @@ bool OneServerWrapper::init(unsigned int port, const AllocationHooks &hooks) {
     // will be send to your application.
     err = one_server_set_soft_stop_callback(_server, soft_stop, this);
     if (one_is_error(err)) {
-        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), one_error_text(err));
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), *FString(one_error_text(err)));
         return false;
     }
 
     err = one_server_set_allocated_callback(_server, allocated, this);
     if (one_is_error(err)) {
-        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), one_error_text(err));
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), *FString(one_error_text(err)));
         return false;
     }
 
     err = one_server_set_metadata_callback(_server, metadata, this);
     if (one_is_error(err)) {
-        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), one_error_text(err));
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), *FString(one_error_text(err)));
         return false;
     }
 
     err = one_server_set_host_information_callback(_server, host_information, this);
     if (one_is_error(err)) {
-        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), one_error_text(err));
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), *FString(one_error_text(err)));
         return false;
     }
 
     err = one_server_set_application_instance_information_callback(
         _server, application_instance_information, this);
     if (one_is_error(err)) {
-        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), one_error_text(err));
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), *FString(one_error_text(err)));
         return false;
     }
 
@@ -178,7 +180,8 @@ void OneServerWrapper::update(bool quiet) {
     // messages are received.
     OneError err = one_server_update(_server);
     if (one_is_error(err)) {
-        if (!_quiet) UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), one_error_text(err));
+        if (!_quiet)
+            UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), *FString(one_error_text(err)));
         return;
     }
 }
@@ -208,7 +211,7 @@ OneServerWrapper::Status OneServerWrapper::status() const {
     OneServerStatus status;
     OneError err = one_server_status(_server, &status);
     if (one_is_error(err)) {
-        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), one_error_text(err));
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), *FString(one_error_text(err)));
         return Status::unknown;
     }
     switch (status) {
@@ -241,7 +244,7 @@ void OneServerWrapper::set_game_state(const GameState &state) {
     // OneObjectPtr object;
     // OneError err = one_object_create(&object);
     // if (one_is_error(err)) {
-    //     UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), one_error_text(err));
+    //     UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), *FString(one_error_text(err));
     // }
     // one_object_set_val_int(object, "matchLength", 123);
 
@@ -250,7 +253,7 @@ void OneServerWrapper::set_game_state(const GameState &state) {
         _server, state.players, state.max_players, state.name.data(), state.map.data(),
         state.mode.data(), state.version.data(), nullptr);
     if (one_is_error(err)) {
-        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), one_error_text(err));
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), *FString(one_error_text(err)));
     }
 
     // If custom data was added, then make sure to destroy the object.
@@ -261,7 +264,7 @@ void OneServerWrapper::set_application_instance_status(ApplicationInstanceStatus
     OneError err = one_server_set_application_instance_status(
         _server, (OneApplicationInstanceStatus)status);
     if (one_is_error(err)) {
-        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), one_error_text(err));
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), *FString(one_error_text(err)));
     }
 }
 

@@ -1,3 +1,4 @@
+// Copyright i3D.net, 2021. All Rights Reserved.
 #include <one/arcus/array.h>
 
 #include <one/arcus/internal/rapidjson/writer.h>

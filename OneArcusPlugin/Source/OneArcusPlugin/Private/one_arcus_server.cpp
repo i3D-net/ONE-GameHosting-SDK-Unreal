@@ -1,3 +1,5 @@
+// Copyright i3D.net, 2021. All Rights Reserved.
+
 #include "one_arcus_server.h"
 
 #include "one_arcus_array.h"
@@ -5,6 +7,8 @@
 
 #include <one/server/one_parsing.h>
 #include <one/arcus/c_error.h>
+
+#include "Misc/CommandLine.h"
 
 #include <chrono>
 #include <array>
@@ -29,7 +33,10 @@ void *realloc(void *p, size_t bytes) {
 
 }  // namespace allocation
 
-AOneArcusServer::AOneArcusServer() : _one_server(), _quiet(false), _is_init(false) {}
+AOneArcusServer::AOneArcusServer() : _one_server(), _quiet(false), _is_init(false) {
+    // Set to false to avoid duplicating the AOneArcusServer on the client side.
+    bNetLoadOnClient = false;
+}
 
 void AOneArcusServer::BeginDestroy() {
     //------------------------------------------------------------
@@ -37,6 +44,16 @@ void AOneArcusServer::BeginDestroy() {
 
     _one_server.shutdown();
     Super::BeginDestroy();
+}
+
+int32 AOneArcusServer::parse_command_line_management_port(int32 default_value) {
+    int32 value;
+
+    if (FParse::Value(FCommandLine::Get(), TEXT("ManagementPort"), value)) {
+        return value;
+    }
+
+    return default_value;
 }
 
 void AOneArcusServer::init(int64 port, int64 players, int64 max_players, FString name,
@@ -189,6 +206,21 @@ void AOneArcusServer::set_game_state(int64 players, int64 max_players, FString n
     game_state.version[version.Len()] = '\0';
 
     _one_server.set_game_state(game_state);
+}
+
+void AOneArcusServer::set_application_instance_starting() {
+    _one_server.set_application_instance_status(
+        OneServerWrapper::ApplicationInstanceStatus::starting);
+}
+
+void AOneArcusServer::set_application_instance_online() {
+    _one_server.set_application_instance_status(
+        OneServerWrapper::ApplicationInstanceStatus::online);
+}
+
+void AOneArcusServer::set_application_instance_allocated() {
+    _one_server.set_application_instance_status(
+        OneServerWrapper::ApplicationInstanceStatus::allocated);
 }
 
 void AOneArcusServer::update() {
