@@ -13,37 +13,37 @@ The following sections describe the instructions to build the plugins locally.
 2. Build the Arcus SDK plugin:
     2.1 Run the following command to build the sdk plugin:
     ```
-    RunUAT.bat BuildPlugin -plugin="%USERPROFILE%/source/repos/one-gamehosting-sdk-unreal/OneArcusSDKPlugin/OneArcusSDKPlugin.uplugin" -package="%USERPROFILE%/.../Plugins/OneArcusSDKPlugin" -TargetPlatforms=Win32+Win64
+    RunUAT.bat BuildPlugin -plugin="%USERPROFILE%/source/repos/one-gamehosting-sdk-unreal/ONEGameHostingSDKPlugin/ONEGameHostingSDKPlugin.uplugin" -package="%USERPROFILE%/.../Plugins/ONEGameHostingSDKPlugin" -TargetPlatforms=Win32+Win64
     ```
     Where `...` is the working directory where you want to copy the plugin.
-    2.2. Copy the `OneArcusSDKPlugin` into Unreal Engine plugin directory: `C:\Program Files\Epic Games\UE_4.25\Engine\Plugins\Arcus`, since it cannot be set directly via their toolchain.
+    2.2. Copy the `ONEGameHostingSDKPlugin` into Unreal Engine plugin directory: `C:\Program Files\Epic Games\UE_4.25\Engine\Plugins\One`, since it cannot be set directly via their toolchain.
 3. Build the Arcus plugin:
     3.1 Run the following command to build the sdk plugin:
     ```
-    RunUAT.bat BuildPlugin -plugin="%USERPROFILE%/source/repos/one-gamehosting-sdk-unreal/OneArcusPlugin/OneArcusPlugin.uplugin" -package="%USERPROFILE%/.../Plugins/OneArcusPlugin"
+    RunUAT.bat BuildPlugin -plugin="%USERPROFILE%/source/repos/one-gamehosting-sdk-unreal/ONEGameHostingPlugin/ONEGameHostingPlugin.uplugin" -package="%USERPROFILE%/.../Plugins/ONEGameHostingPlugin"
     ```
     Where `...` is the working directory where you want to copy the plugin.
-    3.2. Copy the `OneArcusPlugin` into Unreal Engine plugin directory: `C:\Program Files\Epic Games\UE_4.25\Engine\Plugins\Arcus`, since it cannot be set directly via their toolchain.
+    3.2. Copy the `ONEGameHostingPlugin` into Unreal Engine plugin directory: `C:\Program Files\Epic Games\UE_4.25\Engine\Plugins\One`, since it cannot be set directly via their toolchain.
 
 
 ### Linux
 
 1. Follow the [Linux Quick Start](https://docs.unrealengine.com/en-US/SharingAndReleasing/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/index.html) for instructions on how to build the Unreal Engine locally.
-2. For the following steps: the `UnrealEngine` is cloned in the folder `~/src/UnrealEngine/` and the `one-gamehosting-sdk-unreal` is clone in the folder `~/src/one-gamehosting-sdk-unreal`. Make sure that the folder is created `~/src/Arcus`.
+2. For the following steps: the `UnrealEngine` is cloned in the folder `~/src/UnrealEngine/` and the `one-gamehosting-sdk-unreal` is clone in the folder `~/src/one-gamehosting-sdk-unreal`. Make sure that the folder is created `~/src/One`.
 
 2. Build the Arcus SDK plugin:
     2.1 Run the following command:
     ```
-    ~/src/UnrealEngine/Engine/Build/BatchFiles/RunUAT.sh BuildPlugin -plugin=../one-gamehosting-sdk-unreal/OneArcusSDKPlugin/OneArcusSDKPlugin.uplugin -package=../Arcus/OneArcusSDKPlugin -TargetPlatform=Linux
+    ~/src/UnrealEngine/Engine/Build/BatchFiles/RunUAT.sh BuildPlugin -plugin=../one-gamehosting-sdk-unreal/ONEGameHostingSDKPlugin/ONEGameHostingSDKPlugin.uplugin -package=../One/ONEGameHostingSDKPlugin -TargetPlatform=Linux
     ```
-    2.2 Copy the folder `~/src/Arcus/OneArcusSDKPlugin` in `~/src/UnrealEngine/Engine/Plugin/Arcus/OneArcusSDKPlugin`
+    2.2 Copy the folder `~/src/One/ONEGameHostingSDKPlugin` in `~/src/UnrealEngine/Engine/Plugin/One/ONEGameHostingSDKPlugin`
 
 3. Build the Arcus plugin:
     3.1 Run the following command:
     ```
-    ~/src/UnrealEngine/Engine/Build/BatchFiles/RunUAT.sh BuildPlugin -plugin=../one-gamehosting-sdk-unreal/OneArcusPlugin/OneArcusPlugin.uplugin -package=../Arcus/OneArcusPlugin -TargetPlatform=Linux
+    ~/src/UnrealEngine/Engine/Build/BatchFiles/RunUAT.sh BuildPlugin -plugin=../one-gamehosting-sdk-unreal/ONEGameHostingPlugin/ONEGameHostingPlugin.uplugin -package=../One/ONEGameHostingPlugin -TargetPlatform=Linux
     ```
-    3.2 Copy the folder `~/src/Arcus/OneArcusPlugin` in `~/src/UnrealEngine/Engine/Plugin/Arcus/OneArcusPlugin`
+    3.2 Copy the folder `~/src/One/ONEGameHostingPlugin` in `~/src/UnrealEngine/Engine/Plugin/One/ONEGameHostingPlugin`
 
 ## SDK update guide
 
@@ -91,12 +91,12 @@ Currently, is it only possible to build a dedicated game server with the Unreal 
 
 
 Once the Unreal Engine Editor has been built, follow the following steps to build the Arcus Example dedicated game server:
-1. Copy the packaged folder content for both `OneArcusSKDPlugin` and `OneArcusPlugin` into `UnrealEngine/Engine/Plugins/Arcus`.
+1. Copy the packaged folder content for both `ONEGameHostingSDKPlugin` and `ONEGameHostingPlugin` into `UnrealEngine/Engine/Plugins/One`.
 2. In the Unreal Engine Editor select `Edit -> Plugins`.
-3. Search for `Arcus` to find both `OneArcusSKDPlugin` and `OneArcusPlugin` plugins.
+3. Search for `Arcus` to find both `ONEGameHostingSDKPlugin` and `ONEGameHostingPlugin` plugins.
 4. Enable both plugins and restart the Unreal Engine Editor.
-5. Open the `ArcusExample` with the Unreal Engine Editor.
-6. In `File -> Package Project -> Build Target` select: `ArcusExampleServer`.
+5. Open the `ONEGameHostingExample` with the Unreal Engine Editor.
+6. In `File -> Package Project -> Build Target` select: `ONEGameHostingExampleServer`.
 7. Package the project to a folder of your choice by selecting: `File -> Package Project -> Windows (64-bits)`. Note: `Linux` and `Windows (32-bits)` are also supported.   
 
 ### Testing Arcus Example Locally
@@ -108,9 +108,9 @@ To test locally the Arcus Example game server with the local agent:
 
 1. To launch the `Fake Agent` run:
 ```
-agent.exe 19002
+agent.exe
 ```
-Located in the `one-game-sdk` build folder. Where `19002` is the port that the agent connects on. If the port is omitted, it defaults to `19001`.
+Located in the `one-game-sdk` build folder. The agent will repeatedly attempt to connect to the game server on the default port: `19001`. It is possible to pass an alternate port as a command line parameter, e.g. `agent.exe <port>`.
 
 2. Package the Arcus Example Game Server with Unreal Engine Editor into a folder, in this case: `ArcusExampleWin64`.
 3. Run the executable with the following arguments: `ArcusExampleWin64/WindowsServer/ArcusExampleServer.exe -log -ManagementPort 19001`. The `-log` switch is optional and if present will display a window with the logs. If the `-log` is omitted, the logs files can be found in `ArcusExampleWin64/WindowsServer/ArcusExample/Saved/Logs`. Also, if the `-ManagementPort 19001` switch is omitted or isn't an integer, the game server will use the default port `19001` to communicate with the `agent`.

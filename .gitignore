@@ -1,12 +1,13 @@
 build/
 .vscode/
-OneArcusSDKPlugin/Binaries
-OneArcusSDKPlugin/Intermediate
-OneArcusPlugin/Binaries
-OneArcusPlugin/Intermediate
+ONEGameHostingSDKPlugin/Binaries
+ONEGameHostingSDKPlugin/Intermediate
+ONEGameHostingPlugin/Binaries
+ONEGameHostingPlugin/Intermediate
 ArcusExample/Binaries
 ArcusExample/DerivedDataCache
 ArcusExample/Development_Editor
 ArcusExample/Intermediate
 ArcusExample/Saved
 ArcusExample/.vs
+ArcusExample/.kdev4

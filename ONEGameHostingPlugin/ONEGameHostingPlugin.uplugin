@@ -2,7 +2,7 @@
 	"FileVersion": 3,
 	"Version": 1,
 	"VersionName": "1.0",
-	"FriendlyName": "OneArcusPlugin",
+	"FriendlyName": "ONEGameHostingPlugin",
 	"Description": "",
 	"Category": "Other",
 	"CreatedBy": "",
@@ -17,7 +17,7 @@
 	"Installed": false,
 	"Modules": [
 		{
-			"Name": "OneArcusPlugin",
+			"Name": "ONEGameHostingPlugin",
 			"Type": "Runtime",
 			"LoadingPhase": "PreLoadingScreen",
 			"WhitelistPlatforms": [ "Win32", "Win64", "Linux" ]
@@ -25,7 +25,7 @@
 	],
 	"Plugins": [
 		{
-			"Name": "OneArcusSDKPlugin",
+			"Name": "ONEGameHostingSDKPlugin",
 			"Enabled": true
 		}
 	]

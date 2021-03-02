@@ -4,7 +4,7 @@
 
 #include "Modules/ModuleManager.h"
 
-class FOneArcusPluginModule : public IModuleInterface {
+class FONEGameHostingPluginModule : public IModuleInterface {
 public:
     /** IModuleInterface implementation */
     virtual void StartupModule() override;

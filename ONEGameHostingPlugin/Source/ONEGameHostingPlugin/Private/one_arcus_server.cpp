@@ -35,6 +35,7 @@ void *realloc(void *p, size_t bytes) {
 
 AOneArcusServer::AOneArcusServer() : _one_server(), _quiet(false), _is_init(false) {
     // Set to false to avoid duplicating the AOneArcusServer on the client side.
+    bReplicates = false;
     bNetLoadOnClient = false;
 }
 
