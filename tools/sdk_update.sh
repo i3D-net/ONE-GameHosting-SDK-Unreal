@@ -11,8 +11,8 @@ ONE_PLUGIN_REPO_DIR=${2}
 
 ONE_SDK_SOURCE_DIR=${ONE_SDK_REPO_DIR}/one/arcus
 
-ONE_PLUGIN_SOURCE_PRIVATE_DIR=${ONE_PLUGIN_REPO_DIR}/OneArcusSDKPlugin/Source/OneArcusSDKPlugin/Private/one/arcus
-ONE_PLUGIN_SOURCE_PUBLIC_DIR=${ONE_PLUGIN_REPO_DIR}/OneArcusSDKPlugin/Source/OneArcusSDKPlugin/Public/one/arcus
+ONE_PLUGIN_SOURCE_PRIVATE_DIR=${ONE_PLUGIN_REPO_DIR}/ONEGameHostingSDKPlugin/Source/ONEGameHostingSDKPlugin/Private/one/arcus
+ONE_PLUGIN_SOURCE_PUBLIC_DIR=${ONE_PLUGIN_REPO_DIR}/ONEGameHostingSDKPlugin/Source/ONEGameHostingSDKPlugin/Public/one/arcus
 ONE_PLUGIN_DOC_VERSION=${ONE_PLUGIN_REPO_DIR}/docs/sdk_version.md
 
 # Filtering cmake, markdown, internal & public headers.

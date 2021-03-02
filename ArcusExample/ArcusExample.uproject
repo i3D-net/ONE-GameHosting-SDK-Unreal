@@ -12,11 +12,11 @@
 	],
 	"Plugins": [
 		{
-			"Name": "OneArcusPlugin",
+			"Name": "ONEGameHostingPlugin",
 			"Enabled": true
 		},
 		{
-			"Name": "OneArcusSDKPlugin",
+			"Name": "ONEGameHostingSDKPlugin",
 			"Enabled": true
 		}
 	],

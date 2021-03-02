@@ -3,10 +3,10 @@
 using System.IO;
 using UnrealBuildTool;
 
-// One Arcus SDK Plugin build depedencies.
-public class OneArcusSDKPlugin : ModuleRules
+// ONE Game Hosting SDK Plugin build depedencies.
+public class ONEGameHostingSDKPlugin : ModuleRules
 {
-	public OneArcusSDKPlugin(ReadOnlyTargetRules Target) : base(Target)
+	public ONEGameHostingSDKPlugin(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
