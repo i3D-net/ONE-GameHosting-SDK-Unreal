@@ -13,11 +13,11 @@ The plugin provides the public C API headers needed to use `Arcus V2` so they co
 
 The `One Arcus Server` blueprint class in the `Arcus Example` showcase the typical use of the `ONE Game Hosting Plugin` classes. The `Arcus Example` is a minimalist client/server game. In this example the `dedicated server` holds the `One Arcus Server` that interacts with the `ONE` agent via the `Arcus V2` protocol.
 
-The typical life cycle (initialization, updates and shutdown) is shown here: ![Life Cycle](docs/images/life-cycle.png "Life Cycle"). Note that the `One Arcus Server` only should be instantiated and run on the Game Server, not the player game client.
+The typical life cycle (initialization, updates and shutdown) is shown here: ![Life Cycle](images/life-cycle.png "Life Cycle"). Note that the `One Arcus Server` only should be instantiated and run on the Game Server, not the player game client.
 
 The complete list of the `Arcus V2` messages and their associated payloads can be found [here](https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/). The `One Arcus Server` trigger an specific event for each message with their payload.
 
-The `One Arcus Server` events and payload parsing is shown here ![event-parsing.png](docs/images/event-parsing.png "Event Parsing") The `event parsing` example show event payload parsing. The following messages have a fixed payload:
+The `One Arcus Server` events and payload parsing is shown here ![event-parsing.png](images/event-parsing.png "Event Parsing") The `event parsing` example show event payload parsing. The following messages have a fixed payload:
 1. `Soft Stop`:
     The simplest payload, consisting of only one integer `timemout` in seconds. The parsing is already done in the `Event Soft Stop Received` for convenience.
 2. `Application Instance Information`:
@@ -31,7 +31,7 @@ The following messages have a a user defined payload:
 2. `Meta Data`:
     The `Meta Data` message payload is user defined, as seen [here](https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#meta-data). For simplicity, the function `Meta Data Payload Parse` and `Event Meta Data Extracted` mirrors the example payload found in the documentation. One can look into the parse function to find an example on how to parse different payload as needed.
 
-Finally, the `One Arcus Server` provides function to update the game server status to the agent as shown here ![other.png](docs/images/other.png "Other functions") Note that he `Set Quiet` is a small helper function to enable or disable more verbose logging as needed.
+Finally, the `One Arcus Server` provides function to update the game server status to the agent as shown here ![other.png](images/other.png "Other functions") Note that he `Set Quiet` is a small helper function to enable or disable more verbose logging as needed.
 
 
 ## SDK update guide
