@@ -46,7 +46,7 @@ Supported platforms:
 8. Refer to [the arcus example](/ArcusExample) on how to set up and use the component.
 9. [Test](#how-to-test).
 
-There is an of a dedicated game server using the `ONE Game Hosting Plugin` available [here](/ArcusExample/README.md).
+There is an example of a dedicated game server using the `ONE Game Hosting Plugin` available [here](/ArcusExample/README.md).
 
 
 ## <a name="how-to-test"></a> How to test ##
