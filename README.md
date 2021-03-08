@@ -56,7 +56,7 @@ There are two ways to test a Game Server that is running an `One Arcus Server`:
 1. The SDK contains a Fake Agent that can connect and simulate a real deployment. Build and run instructions can be found [here](https://github.com/i3D-net/ONE-GameHosting-SDK/tree/master/one/agent).
 2. The Game Server can be uploaded to a live One Development Platform Deployment. See [here](https://www.i3d.net/docs/one/).
 
-> Testing can be performed either in Unity Editor or on a build running in headless mode.
+> Testing can be performed either in Unreal Editor or on a build running in headless mode.
 
 ## <a name="plugin-package"></a> Package export ##
 

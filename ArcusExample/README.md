@@ -17,7 +17,7 @@ With the Unreal Engine Editor built from the sources, follow the following steps
 
 ### Testing Arcus Example Locally
 
-To test locally one can use the `Fake Agent` found [here](https://git.i3d.net/one/ardentblue/one-game-sdk). The technical documentation for that project can be found [here](https://git.i3d.net/one/ardentblue/one-game-sdk/-/tree/master/docs).
+To test locally one can use the `Fake Agent` found [here](https://github.com/i3D-net/ONE-GameHosting-SDK/tree/master/one/agent). The technical documentation for that project can be found [here](https://github.com/i3D-net/ONE-GameHosting-SDK).
 
 To test locally the Arcus Example game server with the local agent:
 
