@@ -2,51 +2,39 @@
 
 Follow the following steps to build the Unreal Plugin and update the Arcus SDK version. The target audiance is software developers that want to build the plugin locally without using pre-built plugin from Unreal marketplace.
 
+## ONE Game Hosting Plugin
 
-## Plugin Build Steps
+The plugin Provides the `ONE Game Hosting SDK` to the Unreal Engine. More information can be found [here](https://www.i3d.net/docs/one/odp/). More specifically, this plugin wraps the C API provided by the `OneArcusSDKPlugin` with Blueprintable classes for ease of use.
 
-The following sections describe the instructions to build the plugins locally.
-
-### Windows
-
-1. Add `C:\Program Files\Epic Games\UE_4.25\Engine\Build\BatchFiles` in the `PATH` environment variable
-2. Build the Arcus SDK plugin:
-    2.1 Run the following command to build the sdk plugin:
-    ```
-    RunUAT.bat BuildPlugin -plugin="%USERPROFILE%/source/repos/one-gamehosting-sdk-unreal/ONEGameHostingSDKPlugin/ONEGameHostingSDKPlugin.uplugin" -package="%USERPROFILE%/.../Plugins/ONEGameHostingSDKPlugin" -TargetPlatforms=Win32+Win64
-    ```
-    Where `...` is the working directory where you want to copy the plugin.
-    2.2. Copy the `ONEGameHostingSDKPlugin` into Unreal Engine plugin directory: `C:\Program Files\Epic Games\UE_4.25\Engine\Plugins\One`, since it cannot be set directly via their toolchain.
-3. Build the Arcus plugin:
-    3.1 Run the following command to build the sdk plugin:
-    ```
-    RunUAT.bat BuildPlugin -plugin="%USERPROFILE%/source/repos/one-gamehosting-sdk-unreal/ONEGameHostingPlugin/ONEGameHostingPlugin.uplugin" -package="%USERPROFILE%/.../Plugins/ONEGameHostingPlugin"
-    ```
-    Where `...` is the working directory where you want to copy the plugin.
-    3.2. Copy the `ONEGameHostingPlugin` into Unreal Engine plugin directory: `C:\Program Files\Epic Games\UE_4.25\Engine\Plugins\One`, since it cannot be set directly via their toolchain.
+The plugin provides the public C API headers needed to use `Arcus V2` so they could be use directly in your game `C++` implementation. The plugin also contains the private `C++` implementation of the `Arcus V2` protocol and requires no third party `dll`.
 
 
-### Linux
+### Anatomy of the plugin
 
-1. Follow the [Linux Quick Start](https://docs.unrealengine.com/en-US/SharingAndReleasing/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/index.html) for instructions on how to build the Unreal Engine locally.
-2. For the following steps: the `UnrealEngine` is cloned in the folder `~/src/UnrealEngine/` and the `one-gamehosting-sdk-unreal` is clone in the folder `~/src/one-gamehosting-sdk-unreal`. Make sure that the folder is created `~/src/One`.
+The `One Arcus Server` blueprint class in the `Arcus Example` showcase the typical use of the `ONE Game Hosting Plugin` classes. The `Arcus Example` is a minimalist client/server game. In this example the `dedicated server` holds the `One Arcus Server` that interacts with the `ONE` agent via the `Arcus V2` protocol.
 
-2. Build the Arcus SDK plugin:
-    2.1 Run the following command:
-    ```
-    ~/src/UnrealEngine/Engine/Build/BatchFiles/RunUAT.sh BuildPlugin -plugin=../one-gamehosting-sdk-unreal/ONEGameHostingSDKPlugin/ONEGameHostingSDKPlugin.uplugin -package=../One/ONEGameHostingSDKPlugin -TargetPlatform=Linux
-    ```
-    2.2 Copy the folder `~/src/One/ONEGameHostingSDKPlugin` in `~/src/UnrealEngine/Engine/Plugin/One/ONEGameHostingSDKPlugin`
+The typical life cycle (initialization, updates and shutdown) is shown here: ![Life Cycle](docs/images/life-cycle.png "Life Cycle"). Note that the `One Arcus Server` only should be instantiated and run on the Game Server, not the player game client.
 
-3. Build the Arcus plugin:
-    3.1 Run the following command:
-    ```
-    ~/src/UnrealEngine/Engine/Build/BatchFiles/RunUAT.sh BuildPlugin -plugin=../one-gamehosting-sdk-unreal/ONEGameHostingPlugin/ONEGameHostingPlugin.uplugin -package=../One/ONEGameHostingPlugin -TargetPlatform=Linux
-    ```
-    3.2 Copy the folder `~/src/One/ONEGameHostingPlugin` in `~/src/UnrealEngine/Engine/Plugin/One/ONEGameHostingPlugin`
+The complete list of the `Arcus V2` messages and their associated payloads can be found [here](https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/). The `One Arcus Server` trigger an specific event for each message with their payload.
+
+The `One Arcus Server` events and payload parsing is shown here ![event-parsing.png](docs/images/event-parsing.png "Event Parsing") The `event parsing` example show event payload parsing. The following messages have a fixed payload:
+1. `Soft Stop`:
+    The simplest payload, consisting of only one integer `timemout` in seconds. The parsing is already done in the `Event Soft Stop Received` for convenience.
+2. `Application Instance Information`:
+    The Application Instance have a big payload, as seen [here](https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#applicationinstance-information). For simplicity, only the first few fields are being parsed in the function `Application instance Information Payload Parse` and present in the `Event Application Instance Information Extracted`. One can look into the parse function to find an example on how to parse the other fields as needed.
+3. `Host Instance Information`:
+    The Host Instance have a big payload, as seen [here](https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#host-information). For simplicity, only the first few fields are being parsed in the function `Host Information Payload Parse` and present in the `Event Host Information Extracted`. One can look into the parse function to find an example on how to parse the other fields as needed.
+
+The following messages have a a user defined payload:
+1. `Allocated`:
+    The `Allocated` message payload is user defined, as seen [here](https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#allocated). For simplicity, the function `Allocated Payload Parse` and `Event Allocated Extracted` mirrors the example payload found in the documentation. One can look into the parse function to find an example on how to parse different payload as needed.
+2. `Meta Data`:
+    The `Meta Data` message payload is user defined, as seen [here](https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#meta-data). For simplicity, the function `Meta Data Payload Parse` and `Event Meta Data Extracted` mirrors the example payload found in the documentation. One can look into the parse function to find an example on how to parse different payload as needed.
+
+Finally, the `One Arcus Server` provides function to update the game server status to the agent as shown here ![other.png](docs/images/other.png "Other functions") Note that he `Set Quiet` is a small helper function to enable or disable more verbose logging as needed.
+
 
 ## SDK update guide
-
 
 Follow the following instructions to change the version of the i3D.net ONE Game Hosting SDK code used in the plugin:
 
@@ -66,51 +54,3 @@ Note: make sure to omit the trailing slash at the end of the path. For example:
 
 Note that the update script will update the `${PATH_OF_SDK_PLGUIN_REPOSITORY}/docs/sdk_version.md` automatically.
 
-## Arcus Example Dedicated Game Server
-
-
-Currently, is it only possible to build a dedicated game server with the Unreal Engine Editor that is built directly from sources. Also, this [guide](https://docs.unrealengine.com/en-US/InteractiveExperiences/Networking/HowTo/DedicatedServers/index.html) explain the required setup to create your own dedicated game server.
-
-### Building Unreal Engine Editor from Sources
-
-
-#### Windows
-
-
-1. Get the Unreal Engine sources by following this [guide](https://docs.unrealengine.com/en-US/ProgrammingAndScripting/ProgrammingWithCPP/DownloadingSourceCode/index.html). Note: the linux [guide] (https://docs.unrealengine.com/en-US/SharingAndReleasing/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/index.html) has detailed steps to register for an Epic Game account and seting up `git`.
-2. (Optional) To be able to cross compile for `linux`, one has to install the `cross compile toolchain` following this [guide](https://docs.unrealengine.com/en-US/SharingAndReleasing/Linux/GettingStarted/index.html). Note: make sure to reboot at least once after the installation.
-3. Checkout the release branch of Unreal Engine you intend to use. At the time of writting the latest release branch was: `4.25.4-release`.
-4. Build the Unreal Engine from the sources following this [guide](https://docs.unrealengine.com/en-US/ProductionPipelines/DevelopmentSetup/BuildingUnrealEngine/index.html).
-
-#### Linux
-
-
-1. Get the sources and build the Unreal Engine Editor following this [guide](https://docs.unrealengine.com/en-US/SharingAndReleasing/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/index.html).
-
-### Building Arcus Example Game Server
-
-
-Once the Unreal Engine Editor has been built, follow the following steps to build the Arcus Example dedicated game server:
-1. Copy the packaged folder content for both `ONEGameHostingSDKPlugin` and `ONEGameHostingPlugin` into `UnrealEngine/Engine/Plugins/One`.
-2. In the Unreal Engine Editor select `Edit -> Plugins`.
-3. Search for `Arcus` to find both `ONEGameHostingSDKPlugin` and `ONEGameHostingPlugin` plugins.
-4. Enable both plugins and restart the Unreal Engine Editor.
-5. Open the `ONEGameHostingExample` with the Unreal Engine Editor.
-6. In `File -> Package Project -> Build Target` select: `ONEGameHostingExampleServer`.
-7. Package the project to a folder of your choice by selecting: `File -> Package Project -> Windows (64-bits)`. Note: `Linux` and `Windows (32-bits)` are also supported.   
-
-### Testing Arcus Example Locally
-
-
-To test locally one can use the `Fake Agent` found [here](https://git.i3d.net/one/ardentblue/one-game-sdk). The technical documentation for that project can be found [here](https://git.i3d.net/one/ardentblue/one-game-sdk/-/tree/master/docs).
-
-To test locally the Arcus Example game server with the local agent:
-
-1. To launch the `Fake Agent` run:
-```
-agent.exe
-```
-Located in the `one-game-sdk` build folder. The agent will repeatedly attempt to connect to the game server on the default port: `19001`. It is possible to pass an alternate port as a command line parameter, e.g. `agent.exe <port>`.
-
-2. Package the Arcus Example Game Server with Unreal Engine Editor into a folder, in this case: `ArcusExampleWin64`.
-3. Run the executable with the following arguments: `ArcusExampleWin64/WindowsServer/ArcusExampleServer.exe -log -ManagementPort 19001`. The `-log` switch is optional and if present will display a window with the logs. If the `-log` is omitted, the logs files can be found in `ArcusExampleWin64/WindowsServer/ArcusExample/Saved/Logs`. Also, if the `-ManagementPort 19001` switch is omitted or isn't an integer, the game server will use the default port `19001` to communicate with the `agent`.

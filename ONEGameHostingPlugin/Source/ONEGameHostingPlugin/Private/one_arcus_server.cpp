@@ -47,8 +47,8 @@ void AOneArcusServer::BeginDestroy() {
     Super::BeginDestroy();
 }
 
-int32 AOneArcusServer::parse_command_line_management_port(int32 default_value) {
-    int32 value;
+int64 AOneArcusServer::parse_command_line_management_port(int64 default_value) {
+    int64 value;
 
     if (FParse::Value(FCommandLine::Get(), TEXT("ManagementPort"), value)) {
         return value;

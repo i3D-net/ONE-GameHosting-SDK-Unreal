@@ -1,7 +1,5 @@
 build/
 .vscode/
-ONEGameHostingSDKPlugin/Binaries
-ONEGameHostingSDKPlugin/Intermediate
 ONEGameHostingPlugin/Binaries
 ONEGameHostingPlugin/Intermediate
 ArcusExample/Binaries

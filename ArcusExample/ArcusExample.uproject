@@ -14,10 +14,6 @@
 		{
 			"Name": "ONEGameHostingPlugin",
 			"Enabled": true
-		},
-		{
-			"Name": "ONEGameHostingSDKPlugin",
-			"Enabled": true
 		}
 	],
 	"TargetPlatforms": [

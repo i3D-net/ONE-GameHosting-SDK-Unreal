@@ -27,7 +27,7 @@ public:
 
     // Set quiet to true, in order to the logging off and vice versa.
     UFUNCTION(BlueprintCallable, Category = "Arcus")
-    int32 parse_command_line_management_port(int32 default_value);
+    int64 parse_command_line_management_port(int64 default_value);
 
     // -------------------------------
     // Life cycle
