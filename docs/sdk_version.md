@@ -1,3 +1,3 @@
-# ONE Game Hosting SDK Version
+# ONE GAME SDK Version
 
-This plugin uses this [version](https://git.i3d.net/one/ardentblue/one-game-sdk/-/commit/9f7c41d8c90d64711d2176d98857550da1a04a36) of the ONE Game Hosting SDK repository.
+This plugin uses this [version](https://git.i3d.net/one/ardentblue/one-game-sdk/-/commit/65d59a7a8b65e35fd0e4579d3537d553c96f9bdb) of the One Platform SDK repository.

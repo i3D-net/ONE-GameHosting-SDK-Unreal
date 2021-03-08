@@ -1,61 +1,92 @@
-# one-gamehosting-sdk-unreal
+# i3D.net ONE Game Hosting SDK Unreal Plugin #
 
-This Unreal Engine Plugin provides access to `i3D.net` ONE Game Hosting SDK, for easy and efficient scaling of game servers!
+**Version: v0.9 (Beta)**
 
-The `i3D.net` Game Hosting SDK works on Windows and Linux.
-If something doesn’t work, please [file an issue](https://github.com/i3D-net/ONE-GameHosting-SDK/issues).
+> All v1.0 features are complete and ready for integration and use. Customer iteration will determine any final changes before labelling as v1.0.
 
-
-## Overview
-
-The documentation for the entire ONE Platform can be found [here](https://www.i3d.net/docs/one/). This plugin provides the required public headers files as described [here](https://git.i3d.net/one/ardentblue/one-game-sdk/-/blob/master/docs/integration_guide.md), as well, as the required internal implementation which can be found [here](https://git.i3d.net/one/ardentblue/one-game-sdk/-/tree/master/one/arcus).
-
-
-## ONE Game Hosting SDK Plugin
-
-The `ONE Game Hosting SDK Plugin` provides ONE Game Hosting SDK directly in the Unreal Engine. More information about the ONE Game Hosting SDK can be found [here](https://www.i3d.net/docs/one/odp/).
-
-More specifically, this plugin contains the `Arcus V2` protocol implementation for game integration. More information about the `Arcus V2` can be found [here](https://www.i3d.net/docs/one/odp/).
-
-
-### Plugin Anatomy
-
-The plugin provide the plubic C API headers needed to use `Arcus V2` so they could be use directly in your game `C++` implementation. The plugin also contains the private `C++` implementation of the `Arcus V2` protocol and requires no third party `dll`.
-
-
-### SDK Version
+---
 
 The current version of `i3D.net` ONE Game Hosting SDK code used in this plugin is referenced [here](docs/sdk_version.md).
 
-## ONE Game Hosting Plugin
 
-The plugin Provides the `ONE Game Hosting SDK` to the Unreal Engine. More information can be found [here](https://www.i3d.net/docs/one/odp/). More specifically, this plugin wraps the C API provided by the `OneArcusSDKPlugin` with Blueprintable classes for ease of use.
+## Overview ##
 
-### Anatomy of the plugin
+The plugin provides Unreal game servers with the ability to communicate over TCP with the i3D.net ONE Platform, for easy and efficient scaling of game servers.
 
-The `Arcus Server` blueprint class in the `Arcus Example` showcase the typical use of the `ONE Game Hosting Plugin` classes. The `Arcus Example` is a minimalist client/server game. In this example the `dedicated server` holds the `Arcus Server` that interacts with the `ONE` agent via the `Arcus V2` protocol.
+- [Integration guide](#integration-guide) - How to integrate the plugin into a game server.
+- [Sample game](/ArcusExample) - An example of how to use the plugin.
+- [Plugin package](#plugin-package) - How to package the plugin.
 
-The typical life cycle (initialization, updates and shutdown) is shown here: ![Life Cycle](docs/images/life-cycle.png "Life Cycle") Note, that the `Arcus Server` is not replicated between the `dedicated game server` and the `game client`.
+The i3D.net Game Hosting SDK works on Windows and Linux.
+If something doesn’t work, please [file an issue](https://github.com/i3D-net/ONE-GameHosting-SDK-Unreal/issues).
 
-The complete list of the `Arcus V2` messages and their associated payloads can be found [here](https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/). The `Arcus Server` trigger an specific event for each message with their payload.
+The documentation for the entire ONE Platform can be found [here](https://www.i3d.net/docs/one/).
 
-The `Arcus Server` events and payload parsing is shown here ![event-parsing.png](docs/images/event-parsing.png "Event Parsing") The `event parsing` example show event payload parsing. The following messages have a fixed payload:
-1. `Soft Stop`:
-    The simplest payload, consisting of only one integer `timemout` in seconds. The parsing is already done in the `Event Soft Stop Received` for convenience.
-2. `Application Instance Information`:
-    The Application Instance have a big payload, as seen [here](https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#applicationinstance-information). For simplicity, only the first few fields are being parsed in the function `Application instance Information Payload Parse` and present in the `Event Application Instance Information Extracted`. One can look into the parse function to find an example on how to parse the other fields as needed.
-3. `Host Instance Information`:
-    The Host Instance have a big payload, as seen [here](https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#host-information). For simplicity, only the first few fields are being parsed in the function `Host Information Payload Parse` and present in the `Event Host Information Extracted`. One can look into the parse function to find an example on how to parse the other fields as needed.
-
-The following messages have a a user defined payload:
-1. `Allocated`:
-    The `Allocated` message payload is user defined, as seen [here](https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#allocated). For simplicity, the function `Allocated Payload Parse` and `Event Allocated Extracted` mirrors the example payload found in the documentation. One can look into the parse function to find an example on how to parse different payload as needed.
-2. `Meta Data`:
-    The `Meta Data` message payload is user defined, as seen [here](https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#meta-data). For simplicity, the function `Meta Data Payload Parse` and `Event Meta Data Extracted` mirrors the example payload found in the documentation. One can look into the parse function to find an example on how to parse different payload as needed.
-
-Finally, the `Arcus Server` provides function to update the game server status to the agent as shown here ![other.png](docs/images/other.png "Other functions") Note that he `Set Quiet` is a small helper function to enable or disable more verbose logging as needed.
+Supported platforms:
+    - Windows 10 Pro
+    - Ubuntu 18.04
 
 
-## Technical Documentation
+## <a name="requirements"></a> Requirements ##
 
-The target audiance is software developers that want to build the plugin locally without using pre-built plugin from Unreal marketplace. The technical documentation can be foud [here](docs/technical/guide.md).
+1. Minimum compatible Unreal version: 4.25.4.
+2. Native SDK libraries require C++ Redistributable 2015 to be installed on Windows. Download the installer and follow its instructions:
+    - [x64 and x86](https://www.microsoft.com/en-US/download/details.aspx?id=48145)
+
+
+## <a name="integration-guide"></a> Integration guide ##
+
+1. Download the `ONE Game Hosting Plugin` from the Unreal Marketplace.
+2. Copy the plugin folder into `C:\Program Files\Epic Games\UE_4.25\Engine\Plugins`.
+3. In Unreal Editor, select _Edit > Plugins_ menu.
+4. Select the plugin from step 1 and click _Enable_.
+5. Relaunch the Unreal Editor and open your game.
+6. Click _Add New > Blueprint Class_ and search for class `One Arcus Server`.
+7. Drag in the new `One Arcus Server` into a persistent level, so that the `One Arcus Server` persist during the whole game life cycle.
+8. Refer to [the arcus example](/ArcusExample) on how to set up and use the component.
+9. [Test](#how-to-test).
+
+There is an of a dedicated game server using the `ONE Game Hosting Plugin` available [here](/ArcusExample/README.md).
+
+
+## <a name="how-to-test"></a> How to test ##
+
+There are two ways to test a Game Server that is running an `One Arcus Server`:
+
+1. The SDK contains a Fake Agent that can connect and simulate a real deployment. Build and run instructions can be found [here](https://github.com/i3D-net/ONE-GameHosting-SDK/tree/master/one/agent).
+2. The Game Server can be uploaded to a live One Development Platform Deployment. See [here](https://www.i3d.net/docs/one/).
+
+> Testing can be performed either in Unity Editor or on a build running in headless mode.
+
+## <a name="plugin-package"></a> Package export ##
+
+Optional - for developers that need to build and package the plugin locally.
+
+### Windows ###
+
+1. Add `C:\Program Files\Epic Games\UE_4.25\Engine\Build\BatchFiles` in the `PATH` environment variable
+2. Build the Arcus plugin:
+    2.1 For the following steps: the `one-gamehosting-sdk-unreal` repository is cloned in the folder `%USERPROFILE%/source/repos/one-gamehosting-sdk-unreal`.
+    2.2 Run the following command to build the sdk plugin:
+    ```
+    RunUAT.bat BuildPlugin -plugin="%USERPROFILE%/source/repos/one-gamehosting-sdk-unreal/ONEGameHostingPlugin/ONEGameHostingPlugin.uplugin" -package="%USERPROFILE%/.../Plugins/ONEGameHostingPlugin"
+    ```
+    Where `...` is the working directory where you want to copy the plugin.
+    2.3. Copy the `ONEGameHostingPlugin` into Unreal Engine plugin directory: `C:\Program Files\Epic Games\UE_4.25\Engine\Plugins\One`, since it cannot be set directly via their toolchain.
+
+
+### Linux ###
+
+1. Follow the [Linux Quick Start](https://docs.unrealengine.com/en-US/SharingAndReleasing/Linux/BeginnerLinuxDeveloper/SettingUpAnUnrealWorkflow/index.html) for instructions on how to build the Unreal Engine locally.
+2. For the following steps: the `UnrealEngine` is cloned in the folder `~/src/UnrealEngine/` and the `one-gamehosting-sdk-unreal` is cloned in the folder `~/src/one-gamehosting-sdk-unreal`. Make sure that the folder is created `~/src/One`.
+3. Build the Arcus plugin:
+    3.1 Run the following command:
+    ```
+    ~/src/UnrealEngine/Engine/Build/BatchFiles/RunUAT.sh BuildPlugin -plugin=../one-gamehosting-sdk-unreal/ONEGameHostingPlugin/ONEGameHostingPlugin.uplugin -package=../One/ONEGameHostingPlugin -TargetPlatform=Linux
+    ```
+    3.2 Copy the folder `~/src/One/ONEGameHostingPlugin` in `~/src/UnrealEngine/Engine/Plugin/One/ONEGameHostingPlugin`
+
+
+## For developers using this plugin
+
+Optional - The target audiance is software developers that want to build the plugin locally without using pre-built plugin from Unreal marketplace. The technical guide can be found [here](docs/technical/guide.md).

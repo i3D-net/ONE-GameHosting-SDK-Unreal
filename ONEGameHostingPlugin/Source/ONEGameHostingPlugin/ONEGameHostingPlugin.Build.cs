@@ -16,8 +16,7 @@ public class ONEGameHostingPlugin : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core",
-				"ONEGameHostingSDKPlugin"
+				"Core"
 			}
 			);
 			

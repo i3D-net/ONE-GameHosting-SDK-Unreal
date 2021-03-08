@@ -22,11 +22,5 @@
 			"LoadingPhase": "PreLoadingScreen",
 			"WhitelistPlatforms": [ "Win32", "Win64", "Linux" ]
 		}
-	],
-	"Plugins": [
-		{
-			"Name": "ONEGameHostingSDKPlugin",
-			"Enabled": true
-		}
 	]
 }
