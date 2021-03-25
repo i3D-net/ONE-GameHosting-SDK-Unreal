@@ -11,7 +11,7 @@
 #include "one_arcus_server.generated.h"
 
 UCLASS(Blueprintable)
-class AOneArcusServer : public AActor {
+class ONEGAMEHOSTINGPLUGIN_API AOneArcusServer : public AActor {
     GENERATED_BODY()
 
 public:
@@ -24,10 +24,6 @@ public:
     void set_quiet(bool quiet) {
         _quiet = quiet;
     }
-
-    // Set quiet to true, in order to the logging off and vice versa.
-    UFUNCTION(BlueprintCallable, Category = "Arcus")
-    int64 parse_command_line_management_port(int64 default_value);
 
     // -------------------------------
     // Life cycle
@@ -75,33 +71,6 @@ public:
     // -------------------------------
 
     // -------------------------------
-    // Message parsing functions
-
-    // Optional user defined payload parsing. This implementation
-    // match the example found in the documentation.
-    UFUNCTION(BlueprintCallable, Category = "Arcus")
-    void allocatedPayloadParse(UOneArcusArray *array);
-
-    // Optional user defined payload parsing. This implementation
-    // match the example found in the documentation.
-    UFUNCTION(BlueprintCallable, Category = "Arcus")
-    void metaDataPayloadParse(UOneArcusArray *array);
-
-    // Parsing the host information payload. This implementation
-    // only parse for some fields of the payload for simplicity.
-    UFUNCTION(BlueprintCallable, Category = "Arcus")
-    void hostInformationPayloadParse(UOneArcusObject *object);
-
-    // Parsing the application instance information payload.
-    // This implementation only parse for some fields of the
-    // payload for simplicity.
-    UFUNCTION(BlueprintCallable, Category = "Arcus")
-    void applicationInstanceInformationPayloadParse(UOneArcusObject *object);
-
-    // Message parsing functions
-    // -------------------------------
-
-    // -------------------------------
     // Events for received messages with their Arcus SDK types
 
     UFUNCTION(BlueprintImplementableEvent, Category = "Arcus")
@@ -123,25 +92,6 @@ public:
     // -------------------------------
 
     // -------------------------------
-    // Events for received messages with their Unreal basic types.
-
-    UFUNCTION(BlueprintImplementableEvent, Category = "Arcus")
-    void allocatedExtracted(int32 players, int32 duration);
-
-    UFUNCTION(BlueprintImplementableEvent, Category = "Arcus")
-    void metaDataExtracted(const FString &map, const FString &mode, const FString &type);
-
-    UFUNCTION(BlueprintImplementableEvent, Category = "Arcus")
-    void hostInformationExtracted(int32 id, int32 serverId, const FString &serverName);
-
-    UFUNCTION(BlueprintImplementableEvent, Category = "Arcus")
-    void applicationInstanceInformationExtracted(const FString &fleet_id, int32 host_id,
-                                                 bool is_virtual);
-
-    // Events for received messages with their Unreal basic types.
-    // -------------------------------
-
-    // -------------------------------
     // Server callbacks
     // So that the UOneArcusServer can trigger events
     // when a message is received.
@@ -159,5 +109,5 @@ protected:
     one_integration::OneServerWrapper _one_server;
 
     bool _quiet;
-    bool _is_init;
+    bool _is_initialized;
 };
