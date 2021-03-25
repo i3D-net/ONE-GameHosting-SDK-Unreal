@@ -51,7 +51,7 @@ constexpr size_t string_buffer_null_terminated() {
 
 }  // namespace codec
 
-class Parsing final {
+class ONEGAMEHOSTINGPLUGIN_API Parsing final {
 public:
     static bool extract_key_value_payload(
         const OneArrayPtr array,

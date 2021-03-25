@@ -13,7 +13,7 @@ struct OneObject;
 typedef OneObject *OneObjectPtr;
 
 UCLASS(Blueprintable)
-class UOneArcusObject : public UObject {
+class ONEGAMEHOSTINGPLUGIN_API UOneArcusObject : public UObject {
     GENERATED_BODY()
 
 public:

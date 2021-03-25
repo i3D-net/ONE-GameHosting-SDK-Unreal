@@ -5,22 +5,25 @@ using UnrealBuildTool;
 // Arcus Example Module build depedencies.
 public class ArcusExample : ModuleRules
 {
-	public ArcusExample(ReadOnlyTargetRules Target) : base(Target)
-	{
-		// To ensure that Verifying IWYU is Enabled
-		// See https://docs.unrealengine.com/en-US/ProductionPipelines/BuildTools/UnrealBuildTool/IWYU/index.html.
-		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-	
-		PublicDependencyModuleNames.AddRange(
-			new string[]
-			{
-				"Core",
-				"CoreUObject",
-				"Engine",
-				"InputCore"
-			}
-			);
+    public ArcusExample(ReadOnlyTargetRules Target) : base(Target)
+    {
+        // To ensure that Verifying IWYU is Enabled
+        // See https://docs.unrealengine.com/en-US/ProductionPipelines/BuildTools/UnrealBuildTool/IWYU/index.html.
+        PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PrivateDependencyModuleNames.AddRange(new string[] {  });
-	}
+        PublicIncludePaths.Add(ModuleDirectory);
+
+        PublicDependencyModuleNames.AddRange(
+            new string[]
+            {
+                "Core",
+                "CoreUObject",
+                "Engine",
+                "InputCore",
+                "ONEGameHostingPlugin"
+            }
+            );
+
+        PrivateDependencyModuleNames.AddRange(new string[] { });
+    }
 }

@@ -10,8 +10,8 @@ With the Unreal Engine Editor built from the sources, follow the following steps
 2. In the Unreal Engine Editor select `Edit -> Plugins`.
 3. Search for `Arcus` to find the `ONEGameHostingPlugin` plugins.
 4. Enable both plugins and restart the Unreal Engine Editor.
-5. Open the `ONEGameHostingExample` with the Unreal Engine Editor.
-6. In `File -> Package Project -> Build Target` select: `ONEGameHostingExampleServer`.
+5. Open the `ArcusExample` with the Unreal Engine Editor.
+6. In `File -> Package Project -> Build Target` select: `ArcusExampleServer`.
 7. Package the project to a folder of your choice by selecting: `File -> Package Project -> Windows (64-bits)`. Note: `Linux` and `Windows (32-bits)` are also supported.   
 
 
@@ -28,7 +28,8 @@ agent.exe
 Located in the `one-game-sdk` build folder. The agent will repeatedly attempt to connect to the game server on the default port: `19001`. It is possible to pass an alternate port as a command line parameter, e.g. `agent.exe <port>`.
 
 2. Package the Arcus Example Game Server with Unreal Engine Editor into a folder, in this case: `ArcusExampleWin64`.
-3. Run the executable with the following arguments: `ArcusExampleWin64/WindowsServer/ArcusExampleServer.exe -log -ManagementPort 19001`. The `-log` switch is optional and if present will display a window with the logs. If the `-log` is omitted, the logs files can be found in `ArcusExampleWin64/WindowsServer/ArcusExample/Saved/Logs`. Also, if the `-ManagementPort 19001` switch is omitted or isn't an integer, the game server will use the default port `19001` to communicate with the `agent`.
+3. Run the executable with the following arguments: `ArcusExampleWin64/WindowsServer/ArcusExampleServer.exe -ManagementPort 19001`. If the `-ManagementPort 19001` switch is omitted or isn't an integer, the game server will use the default port `19001` to communicate with the `agent`.
+4. The `ArcusExampleServer` logs will show the received `Fake Agent` messages payload.
 
 ### Building Unreal Engine Editor from Sources
 

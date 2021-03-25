@@ -13,7 +13,7 @@ struct OneArray;
 typedef OneArray *OneArrayPtr;
 
 UCLASS(Blueprintable)
-class UOneArcusArray : public UObject {
+class ONEGAMEHOSTINGPLUGIN_API UOneArcusArray : public UObject {
     GENERATED_BODY()
 
 public:
