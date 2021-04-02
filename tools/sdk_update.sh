@@ -13,6 +13,7 @@ ONE_SDK_SOURCE_DIR=${ONE_SDK_REPO_DIR}/one/arcus
 
 ONE_PLUGIN_SOURCE_PRIVATE_DIR=${ONE_PLUGIN_REPO_DIR}/ONEGameHostingPlugin/Source/ONEGameHostingPlugin/Private/one/arcus
 ONE_PLUGIN_SOURCE_PUBLIC_DIR=${ONE_PLUGIN_REPO_DIR}/ONEGameHostingPlugin/Source/ONEGameHostingPlugin/Public/one/arcus
+ONE_PLUGIN_SOURCE_THIRD_PARTY_DIR=${ONE_PLUGIN_REPO_DIR}/ONEGameHostingPlugin/Source/ONEGameHostingPlugin/ThirdParty/one/arcus/internal
 ONE_PLUGIN_DOC_VERSION=${ONE_PLUGIN_REPO_DIR}/docs/sdk_version.md
 
 # Filtering cmake, markdown, internal & public headers.
@@ -25,6 +26,7 @@ ls ${ONE_SDK_SOURCE_DIR} \
 
 # Copying the internal folder in a second setp to avoid any uninteded filtering.
 cp -r ${ONE_SDK_SOURCE_DIR}/internal ${ONE_PLUGIN_SOURCE_PRIVATE_DIR}
+mv ${ONE_PLUGIN_SOURCE_PRIVATE_DIR}/internal/rapidjson ${ONE_PLUGIN_SOURCE_THIRD_PARTY_DIR}
 
 # Copying the public headers
 cp -r ${ONE_SDK_SOURCE_DIR}/c_api.h ${ONE_PLUGIN_SOURCE_PUBLIC_DIR}
