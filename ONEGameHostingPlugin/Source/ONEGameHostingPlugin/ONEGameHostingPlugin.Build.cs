@@ -12,7 +12,7 @@ public class ONEGameHostingPlugin : ModuleRules
 
 		PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Public"));
 		PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "Private"));
-		PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "ThirdParty"));
+		PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "../ThirdParty"));
 
 		PublicDependencyModuleNames.AddRange(
 			new string[]
