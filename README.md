@@ -29,7 +29,7 @@ Supported platforms:
 
 ## <a name="requirements"></a> Requirements ##
 
-1. Minimum compatible Unreal version: 4.25.4.
+1. Minimum compatible Unreal version: 4.25
 2. Native SDK libraries require C++ Redistributable 2015 to be installed on Windows. Download the installer and follow its instructions:
     - [x64 and x86](https://www.microsoft.com/en-US/download/details.aspx?id=48145)
 
@@ -37,7 +37,7 @@ Supported platforms:
 ## <a name="integration-guide"></a> Integration guide ##
 
 1. Download the `ONE Game Hosting Plugin` from the Unreal Marketplace.
-2. Copy the plugin folder into `C:\Program Files\Epic Games\UE_4.25\Engine\Plugins`.
+2. Copy the plugin folder into `C:\Program Files\Epic Games\UE_4.26\Engine\Plugins`.
 3. In Unreal Editor, select _Edit > Plugins_ menu.
 4. Select the plugin from step 1 and click _Enable_.
 5. Relaunch the Unreal Editor and open your game.
@@ -64,15 +64,15 @@ Optional - for developers that need to build and package the plugin locally.
 
 ### Windows ###
 
-1. Add `C:\Program Files\Epic Games\UE_4.25\Engine\Build\BatchFiles` in the `PATH` environment variable
+1. Add `C:\Program Files\Epic Games\UE_4.26\Engine\Build\BatchFiles` in the `PATH` environment variable
 2. Build the Arcus plugin:
     2.1 For the following steps: the `one-gamehosting-sdk-unreal` repository is cloned in the folder `%USERPROFILE%/source/repos/one-gamehosting-sdk-unreal`.
     2.2 Run the following command to build the sdk plugin:
     ```
-    RunUAT.bat BuildPlugin -plugin="%USERPROFILE%/source/repos/one-gamehosting-sdk-unreal/ONEGameHostingPlugin/ONEGameHostingPlugin.uplugin" -package="%USERPROFILE%/.../Plugins/ONEGameHostingPlugin"
+    RunUAT.bat BuildPlugin -plugin="%USERPROFILE%/source/repos/one-gamehosting-sdk-unreal/4.26/ONEGameHostingPlugin/ONEGameHostingPlugin.uplugin" -package="%USERPROFILE%/.../Plugins/ONEGameHostingPlugin"
     ```
     Where `...` is the working directory where you want to copy the plugin.
-    2.3. Copy the `ONEGameHostingPlugin` into Unreal Engine plugin directory: `C:\Program Files\Epic Games\UE_4.25\Engine\Plugins\One`, since it cannot be set directly via their toolchain.
+    2.3. Copy the `ONEGameHostingPlugin` into Unreal Engine plugin directory: `C:\Program Files\Epic Games\UE_4.26\Engine\Plugins\One`, since it cannot be set directly via their toolchain.
 
 
 ### Linux ###
@@ -82,7 +82,7 @@ Optional - for developers that need to build and package the plugin locally.
 3. Build the Arcus plugin:
     3.1 Run the following command:
     ```
-    ~/src/UnrealEngine/Engine/Build/BatchFiles/RunUAT.sh BuildPlugin -plugin=../one-gamehosting-sdk-unreal/ONEGameHostingPlugin/ONEGameHostingPlugin.uplugin -package=../One/ONEGameHostingPlugin -TargetPlatform=Linux
+    ~/src/UnrealEngine/Engine/Build/BatchFiles/RunUAT.sh BuildPlugin -plugin=../one-gamehosting-sdk-unreal/4.26/ONEGameHostingPlugin/ONEGameHostingPlugin.uplugin -package=../One/ONEGameHostingPlugin -TargetPlatform=Linux
     ```
     3.2 Copy the folder `~/src/One/ONEGameHostingPlugin` in `~/src/UnrealEngine/Engine/Plugin/One/ONEGameHostingPlugin`
 
