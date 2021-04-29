@@ -32,9 +32,12 @@ ONE_PLUGIN_UPLUGIN_FILE=${ONE_PLUGIN_DIR}/${ONE_PLUGIN_NAME}/${ONE_PLUGIN_NAME}.
 mkdir -p ${ONE_PLUGIN_DIR}
 mkdir -p ${ONE_PLUGIN_SOURCE_PRIVATE_DIR}
 mkdir -p ${ONE_PLUGIN_SOURCE_PUBLIC_DIR}
-mkdir -p ${ONE_PLUGIN_SOURCE_THIRD_PARTY_DIR}
 mkdir -p ${ONE_PLUGIN_TEMPLATE_DIR}
 mkdir -p ${ONE_PLUGIN_DOC_DIR}
+
+# To avoid mv failed because directory is not empty.
+if [ -d "${ONE_PLUGIN_SOURCE_THIRD_PARTY_DIR}" ]; then rm -Rf ${ONE_PLUGIN_SOURCE_THIRD_PARTY_DIR}; fi
+mkdir -p ${ONE_PLUGIN_SOURCE_THIRD_PARTY_DIR}
 
 # Copying the Plugin template file layout.
 cp -r ${ONE_PLUGIN_TEMPLATE_DIR} ${ONE_PLUGIN_DIR}
