@@ -23,7 +23,7 @@ Object &Object::operator=(const Object &other) {
     return *this;
 }
 
-Error Object::set(const rapidjson::Value &object) {
+OneError Object::set(const rapidjson::Value &object) {
     if (!object.IsObject()) {
         return ONE_ERROR_OBJECT_WRONG_TYPE_IS_EXPECTING_OBJECT;
     }
@@ -40,7 +40,7 @@ bool Object::is_empty() const {
     return _doc.ObjectEmpty();
 }
 
-Error Object::remove_key(const char *key) {
+OneError Object::remove_key(const char *key) {
     if (key == nullptr) {
         return ONE_ERROR_OBJECT_KEY_IS_NULLPTR;
     }
@@ -119,7 +119,7 @@ bool Object::is_val_object(const char *key) const {
     return member->value.IsObject();
 }
 
-Error Object::val_bool(const char *key, bool &val) const {
+OneError Object::val_bool(const char *key, bool &val) const {
     if (key == nullptr) {
         return ONE_ERROR_OBJECT_KEY_IS_NULLPTR;
     }
@@ -137,7 +137,7 @@ Error Object::val_bool(const char *key, bool &val) const {
     return ONE_ERROR_NONE;
 }
 
-Error Object::val_int(const char *key, int &val) const {
+OneError Object::val_int(const char *key, int &val) const {
     if (key == nullptr) {
         return ONE_ERROR_OBJECT_KEY_IS_NULLPTR;
     }
@@ -155,7 +155,7 @@ Error Object::val_int(const char *key, int &val) const {
     return ONE_ERROR_NONE;
 }
 
-Error Object::val_string_size(const char *key, size_t &size) const {
+OneError Object::val_string_size(const char *key, size_t &size) const {
     if (key == nullptr) {
         return ONE_ERROR_OBJECT_KEY_IS_NULLPTR;
     }
@@ -173,7 +173,7 @@ Error Object::val_string_size(const char *key, size_t &size) const {
     return ONE_ERROR_NONE;
 }
 
-Error Object::val_string(const char *key, String &val) const {
+OneError Object::val_string(const char *key, String &val) const {
     if (key == nullptr) {
         return ONE_ERROR_OBJECT_KEY_IS_NULLPTR;
     }
@@ -191,7 +191,7 @@ Error Object::val_string(const char *key, String &val) const {
     return ONE_ERROR_NONE;
 }
 
-Error Object::val_array(const char *key, Array &val) const {
+OneError Object::val_array(const char *key, Array &val) const {
     if (key == nullptr) {
         return ONE_ERROR_OBJECT_KEY_IS_NULLPTR;
     }
@@ -213,7 +213,7 @@ Error Object::val_array(const char *key, Array &val) const {
     return ONE_ERROR_NONE;
 }
 
-Error Object::val_object(const char *key, Object &val) const {
+OneError Object::val_object(const char *key, Object &val) const {
     if (key == nullptr) {
         return ONE_ERROR_OBJECT_KEY_IS_NULLPTR;
     }
@@ -235,7 +235,7 @@ Error Object::val_object(const char *key, Object &val) const {
     return ONE_ERROR_NONE;
 }
 
-Error Object::set_val_bool(const char *key, bool val) {
+OneError Object::set_val_bool(const char *key, bool val) {
     if (key == nullptr) {
         return ONE_ERROR_OBJECT_KEY_IS_NULLPTR;
     }
@@ -256,7 +256,7 @@ Error Object::set_val_bool(const char *key, bool val) {
     return ONE_ERROR_NONE;
 }
 
-Error Object::set_val_int(const char *key, int val) {
+OneError Object::set_val_int(const char *key, int val) {
     if (key == nullptr) {
         return ONE_ERROR_OBJECT_KEY_IS_NULLPTR;
     }
@@ -278,7 +278,7 @@ Error Object::set_val_int(const char *key, int val) {
     return ONE_ERROR_NONE;
 }
 
-Error Object::set_val_string(const char *key, const String &val) {
+OneError Object::set_val_string(const char *key, const String &val) {
     if (key == nullptr) {
         return ONE_ERROR_OBJECT_KEY_IS_NULLPTR;
     }
@@ -300,7 +300,7 @@ Error Object::set_val_string(const char *key, const String &val) {
     return ONE_ERROR_NONE;
 }
 
-Error Object::set_val_array(const char *key, const Array &val) {
+OneError Object::set_val_array(const char *key, const Array &val) {
     if (key == nullptr) {
         return ONE_ERROR_OBJECT_KEY_IS_NULLPTR;
     }
@@ -323,7 +323,7 @@ Error Object::set_val_array(const char *key, const Array &val) {
     return ONE_ERROR_NONE;
 }
 
-Error Object::set_val_object(const char *key, const Object &val) {
+OneError Object::set_val_object(const char *key, const Object &val) {
     if (key == nullptr) {
         return ONE_ERROR_OBJECT_KEY_IS_NULLPTR;
     }

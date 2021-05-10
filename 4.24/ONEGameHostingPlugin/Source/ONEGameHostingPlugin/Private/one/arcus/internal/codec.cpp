@@ -33,7 +33,7 @@ bool validate_header(const Header &header) {
     return is_valid;
 }
 
-Error data_to_message(const void *data, const size_t data_size, size_t &read_data_size,
+OneError data_to_message(const void *data, const size_t data_size, size_t &read_data_size,
                       Header &header, Message &message) {
     if (data_size < header_size()) {
         return ONE_ERROR_CODEC_DATA_LENGTH_TOO_SMALL_FOR_HEADER;
@@ -77,7 +77,7 @@ Error data_to_message(const void *data, const size_t data_size, size_t &read_dat
     return ONE_ERROR_NONE;
 }
 
-Error message_to_data(const uint32_t packet_id, const Message &message,
+OneError message_to_data(const uint32_t packet_id, const Message &message,
                       size_t &data_length,
                       std::array<char, header_size() + payload_max_size()> &data) {
     std::array<char, payload_max_size()> payload_data;
@@ -106,7 +106,7 @@ Error message_to_data(const uint32_t packet_id, const Message &message,
     return ONE_ERROR_NONE;
 }
 
-Error data_to_header(const void *data, size_t length, Header &header) {
+OneError data_to_header(const void *data, size_t length, Header &header) {
     // handle byte order to a specific order for wire
 
     if (length < header_size()) {
@@ -133,7 +133,7 @@ Error data_to_header(const void *data, size_t length, Header &header) {
     return ONE_ERROR_NONE;
 }
 
-Error header_to_data(const Header &header, std::array<char, header_size()> &data) {
+OneError header_to_data(const Header &header, std::array<char, header_size()> &data) {
     if (!validate_header(header)) {
         return ONE_ERROR_CODEC_INVALID_HEADER;
     }
@@ -150,7 +150,7 @@ Error header_to_data(const Header &header, std::array<char, header_size()> &data
     return ONE_ERROR_NONE;
 }
 
-Error data_to_payload(const void *data, size_t length, Payload &payload) {
+OneError data_to_payload(const void *data, size_t length, Payload &payload) {
     if (payload_max_size() < length) {
         return ONE_ERROR_CODEC_INVALID_MESSAGE_PAYLOAD_SIZE_TOO_BIG;
     }
@@ -166,7 +166,7 @@ Error data_to_payload(const void *data, size_t length, Payload &payload) {
     return ONE_ERROR_NONE;
 }
 
-Error payload_to_data(const Payload &payload, size_t &payload_length,
+OneError payload_to_data(const Payload &payload, size_t &payload_length,
                       std::array<char, payload_max_size()> &data) {
     if (payload.is_empty()) {
         payload_length = 0;
