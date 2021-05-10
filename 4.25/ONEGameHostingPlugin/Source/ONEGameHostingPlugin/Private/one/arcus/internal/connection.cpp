@@ -78,7 +78,7 @@ Connection::Status Connection::status() const {
     return _status;
 }
 
-Error Connection::add_outgoing(const Message &message) {
+OneError Connection::add_outgoing(const Message &message) {
     if (_status == Status::uninitialized) return ONE_ERROR_CONNECTION_UNINITIALIZED;
 
     if (_outgoing_messages.size() == _outgoing_messages.capacity())
@@ -88,15 +88,15 @@ Error Connection::add_outgoing(const Message &message) {
     return ONE_ERROR_NONE;
 }
 
-Error Connection::incoming_count(unsigned int &count) const {
+OneError Connection::incoming_count(unsigned int &count) const {
     if (_status == Status::uninitialized) return ONE_ERROR_CONNECTION_UNINITIALIZED;
 
     count = static_cast<unsigned int>(_incoming_messages.size());
     return ONE_ERROR_NONE;
 }
 
-Error Connection::remove_incoming(
-    std::function<Error(const Message &message)> read_callback) {
+OneError Connection::remove_incoming(
+    std::function<OneError(const Message &message)> read_callback) {
     assert(read_callback);
     if (_status == Status::uninitialized) return ONE_ERROR_CONNECTION_UNINITIALIZED;
 
@@ -111,7 +111,7 @@ Error Connection::remove_incoming(
     return err;
 }
 
-Error Connection::initiate_handshake() {
+OneError Connection::initiate_handshake() {
     if (_status == Status::uninitialized) return ONE_ERROR_CONNECTION_UNINITIALIZED;
     assert(_status == Status::handshake_not_started);
     _status = Status::handshake_hello_scheduled;
@@ -119,7 +119,7 @@ Error Connection::initiate_handshake() {
     return ONE_ERROR_NONE;
 }
 
-Error Connection::process_health() {
+OneError Connection::process_health() {
     if (_health_checker.process_receive()) {
         _status = Status::error;
         return ONE_ERROR_CONNECTION_HEALTH_TIMEOUT;
@@ -133,7 +133,7 @@ Error Connection::process_health() {
     return ONE_ERROR_NONE;
 }
 
-Error Connection::update() {
+OneError Connection::update() {
     if (_status == Status::uninitialized) return ONE_ERROR_CONNECTION_UNINITIALIZED;
     if (_status == Status::error) return ONE_ERROR_CONNECTION_UPDATE_AFTER_ERROR;
 
@@ -170,7 +170,7 @@ Error Connection::update() {
     return process_incoming_messages();
 }
 
-Error Connection::ensure_nothing_received() {
+OneError Connection::ensure_nothing_received() {
     assert(_socket && _socket->is_initialized());
 
     char byte;
@@ -185,7 +185,7 @@ Error Connection::ensure_nothing_received() {
     return ONE_ERROR_NONE;
 }
 
-Error Connection::try_send_hello() {
+OneError Connection::try_send_hello() {
     assert(_socket && _socket->is_initialized());
 
     auto &stream = _out_stream;
@@ -219,7 +219,7 @@ Error Connection::try_send_hello() {
     return ONE_ERROR_NONE;
 }
 
-Error Connection::try_receive_hello() {
+OneError Connection::try_receive_hello() {
     assert(_socket && _socket->is_initialized());
 
     // Read a hello packet from socket.
@@ -269,7 +269,7 @@ const codec::Header &hello_message() {
     return message;
 }
 
-Error Connection::try_send_hello_message() {
+OneError Connection::try_send_hello_message() {
     assert(_socket && _socket->is_initialized());
 
     auto &stream = _out_stream;
@@ -303,7 +303,7 @@ Error Connection::try_send_hello_message() {
     return ONE_ERROR_NONE;
 }
 
-Error Connection::try_read_data_into_in_stream() {
+OneError Connection::try_read_data_into_in_stream() {
     assert(_socket && _socket->is_initialized());
 
     constexpr size_t max_read_size = codec::header_size() + codec::payload_max_size();
@@ -344,8 +344,8 @@ Error Connection::try_read_data_into_in_stream() {
     return ONE_ERROR_NONE;
 }
 
-Error Connection::try_read_message_from_in_stream(codec::Header &header,
-                                                  Message &message) {
+OneError Connection::try_read_message_from_in_stream(codec::Header &header,
+                                                     Message &message) {
     const size_t in_stream_size = _in_stream.size();
     if (in_stream_size < codec::header_size())
         return ONE_ERROR_CONNECTION_TRY_AGAIN;  // Nothing to read.
@@ -376,7 +376,7 @@ Error Connection::try_read_message_from_in_stream(codec::Header &header,
     return ONE_ERROR_NONE;
 }
 
-Error Connection::try_receive_hello_message() {
+OneError Connection::try_receive_hello_message() {
     auto err = try_read_data_into_in_stream();
     if (is_error(err)) return err;
 
@@ -394,7 +394,7 @@ Error Connection::try_receive_hello_message() {
     return ONE_ERROR_NONE;
 }
 
-Error Connection::process_handshake() {
+OneError Connection::process_handshake() {
     assert(_socket && _socket->is_initialized());
 
     if (_handshake_timer.update()) {
@@ -402,8 +402,8 @@ Error Connection::process_handshake() {
         return ONE_ERROR_CONNECTION_HANDSHAKE_TIMEOUT;
     }
 
-    Error err;
-    auto fail = [this](Error err) {
+    OneError err;
+    auto fail = [this](OneError err) {
         _status = Status::error;
         return err;
     };
@@ -458,7 +458,7 @@ Error Connection::process_handshake() {
     return ONE_ERROR_NONE;
 }
 
-Error Connection::process_incoming_messages() {
+OneError Connection::process_incoming_messages() {
     assert(_socket && _socket->is_initialized());
 
     // See: https://en.cppreference.com/w/cpp/language/value_initialization
@@ -520,12 +520,12 @@ Error Connection::process_incoming_messages() {
     return err;
 }
 
-Error Connection::process_outgoing_messages() {
+OneError Connection::process_outgoing_messages() {
     assert(_socket && _socket->is_initialized());
 
     // Util to attempt to send all pending data in the buffered outgoing data
     // stream.
-    auto send_pending_data = [&]() -> Error {
+    auto send_pending_data = [&]() -> OneError {
         size_t size = _out_stream.size();
         if (size == 0) return ONE_ERROR_NONE;
 

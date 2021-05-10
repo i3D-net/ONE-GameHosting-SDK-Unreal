@@ -36,7 +36,7 @@ Client::~Client() {
     shutdown();
 }
 
-Error Client::init(const char *address, unsigned int port) {
+OneError Client::init(const char *address, unsigned int port) {
     const std::lock_guard<std::mutex> lock(_client);
 
     _server_address = address;
@@ -100,7 +100,7 @@ void Client::shutdown() {
     _callbacks = ClientCallbacks{};
 }
 
-Error Client::update() {
+OneError Client::update() {
     const std::lock_guard<std::mutex> lock(_client);
 
     if (!is_initialized()) {
@@ -127,7 +127,7 @@ Error Client::update() {
         }
     }
 
-    auto close_client = [this](const Error passthrough_err) -> Error {
+    auto close_client = [this](const OneError passthrough_err) -> OneError {
 #ifdef ONE_ARCUS_CLIENT_LOGGING
         String ip;
         unsigned int port;
@@ -205,7 +205,7 @@ Client::Status Client::status() const {
     }
 }
 
-Error Client::send_soft_stop(int timeout) {
+OneError Client::send_soft_stop(int timeout) {
     const std::lock_guard<std::mutex> lock(_client);
 
     Message message;
@@ -218,7 +218,7 @@ Error Client::send_soft_stop(int timeout) {
     return ONE_ERROR_NONE;
 }
 
-Error Client::send_allocated(Array &data) {
+OneError Client::send_allocated(Array &data) {
     const std::lock_guard<std::mutex> lock(_client);
 
     Message message;
@@ -231,7 +231,7 @@ Error Client::send_allocated(Array &data) {
     return ONE_ERROR_NONE;
 }
 
-Error Client::send_metadata(Array &data) {
+OneError Client::send_metadata(Array &data) {
     const std::lock_guard<std::mutex> lock(_client);
 
     Message message;
@@ -244,7 +244,7 @@ Error Client::send_metadata(Array &data) {
     return ONE_ERROR_NONE;
 }
 
-Error Client::send_host_information(Object &data) {
+OneError Client::send_host_information(Object &data) {
     const std::lock_guard<std::mutex> lock(_client);
 
     Message message;
@@ -257,7 +257,7 @@ Error Client::send_host_information(Object &data) {
     return ONE_ERROR_NONE;
 }
 
-Error Client::send_application_instance_information(Object &data) {
+OneError Client::send_application_instance_information(Object &data) {
     const std::lock_guard<std::mutex> lock(_client);
 
     Message message;
@@ -270,7 +270,7 @@ Error Client::send_application_instance_information(Object &data) {
     return ONE_ERROR_NONE;
 }
 
-Error Client::set_live_state_callback(
+OneError Client::set_live_state_callback(
     std::function<void(void *, int, int, const String &, const String &, const String &,
                        const String &)>
         callback,
@@ -286,7 +286,7 @@ Error Client::set_live_state_callback(
     return ONE_ERROR_NONE;
 }
 
-Error Client::set_application_instance_status_callback(
+OneError Client::set_application_instance_status_callback(
     std::function<void(void *, int)> callback, void *userdata) {
     const std::lock_guard<std::mutex> lock(_client);
 
@@ -299,7 +299,7 @@ Error Client::set_application_instance_status_callback(
     return ONE_ERROR_NONE;
 }
 
-Error Client::process_incoming_message(const Message &message) {
+OneError Client::process_incoming_message(const Message &message) {
     switch (message.code()) {
         case Opcode::live_state:
             if (_callbacks._live_state == nullptr) {
@@ -321,8 +321,8 @@ Error Client::process_incoming_message(const Message &message) {
     }
 }
 
-Error Client::process_outgoing_message(const Message &message) {
-    Error err = ONE_ERROR_NONE;
+OneError Client::process_outgoing_message(const Message &message) {
+    OneError err = ONE_ERROR_NONE;
     switch (message.code()) {
         case Opcode::soft_stop: {
             params::SoftStopRequest params;
@@ -390,7 +390,7 @@ Error Client::process_outgoing_message(const Message &message) {
     return ONE_ERROR_NONE;
 }
 
-Error Client::connect() {
+OneError Client::connect() {
     if (!is_initialized()) {
         return ONE_ERROR_CLIENT_NOT_INITIALIZED;
     }

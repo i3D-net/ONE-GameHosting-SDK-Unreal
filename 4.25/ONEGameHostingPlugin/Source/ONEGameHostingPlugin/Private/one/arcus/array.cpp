@@ -18,7 +18,7 @@ Array &Array::operator=(const Array &other) {
     return *this;
 }
 
-Error Array::set(const rapidjson::Value &array) {
+OneError Array::set(const rapidjson::Value &array) {
     if (!array.IsArray()) {
         return ONE_ERROR_ARRAY_WRONG_TYPE_IS_EXPECTING_ARRAY;
     }
@@ -115,7 +115,7 @@ bool Array::is_val_object(unsigned int pos) const {
     return _doc[pos].IsObject();
 }
 
-Error Array::val_bool(unsigned int pos, bool &val) const {
+OneError Array::val_bool(unsigned int pos, bool &val) const {
     if (_doc.Size() <= pos) {
         return ONE_ERROR_ARRAY_POSITION_OUT_OF_BOUNDS;
     }
@@ -129,7 +129,7 @@ Error Array::val_bool(unsigned int pos, bool &val) const {
     return ONE_ERROR_NONE;
 }
 
-Error Array::val_int(unsigned int pos, int &val) const {
+OneError Array::val_int(unsigned int pos, int &val) const {
     if (_doc.Size() <= pos) {
         return ONE_ERROR_ARRAY_POSITION_OUT_OF_BOUNDS;
     }
@@ -143,7 +143,7 @@ Error Array::val_int(unsigned int pos, int &val) const {
     return ONE_ERROR_NONE;
 }
 
-Error Array::val_string_size(unsigned int pos, size_t &size) const {
+OneError Array::val_string_size(unsigned int pos, size_t &size) const {
     if (_doc.Size() <= pos) {
         return ONE_ERROR_ARRAY_POSITION_OUT_OF_BOUNDS;
     }
@@ -157,7 +157,7 @@ Error Array::val_string_size(unsigned int pos, size_t &size) const {
     return ONE_ERROR_NONE;
 }
 
-Error Array::val_string(unsigned int pos, String &val) const {
+OneError Array::val_string(unsigned int pos, String &val) const {
     if (_doc.Size() <= pos) {
         return ONE_ERROR_ARRAY_POSITION_OUT_OF_BOUNDS;
     }
@@ -171,7 +171,7 @@ Error Array::val_string(unsigned int pos, String &val) const {
     return ONE_ERROR_NONE;
 }
 
-Error Array::val_array(unsigned int pos, Array &val) const {
+OneError Array::val_array(unsigned int pos, Array &val) const {
     if (_doc.Size() <= pos) {
         return ONE_ERROR_ARRAY_POSITION_OUT_OF_BOUNDS;
     }
@@ -185,7 +185,7 @@ Error Array::val_array(unsigned int pos, Array &val) const {
     return ONE_ERROR_NONE;
 }
 
-Error Array::val_object(unsigned int pos, Object &val) const {
+OneError Array::val_object(unsigned int pos, Object &val) const {
     if (_doc.Size() <= pos) {
         return ONE_ERROR_ARRAY_POSITION_OUT_OF_BOUNDS;
     }
@@ -199,7 +199,7 @@ Error Array::val_object(unsigned int pos, Object &val) const {
     return ONE_ERROR_NONE;
 }
 
-Error Array::set_val_bool(unsigned int pos, bool val) {
+OneError Array::set_val_bool(unsigned int pos, bool val) {
     if (_doc.Size() <= pos) {
         return ONE_ERROR_ARRAY_POSITION_OUT_OF_BOUNDS;
     }
@@ -215,7 +215,7 @@ Error Array::set_val_bool(unsigned int pos, bool val) {
     return ONE_ERROR_NONE;
 }
 
-Error Array::set_val_int(unsigned int pos, int val) {
+OneError Array::set_val_int(unsigned int pos, int val) {
     if (_doc.Size() <= pos) {
         return ONE_ERROR_ARRAY_POSITION_OUT_OF_BOUNDS;
     }
@@ -231,7 +231,7 @@ Error Array::set_val_int(unsigned int pos, int val) {
     return ONE_ERROR_NONE;
 }
 
-Error Array::set_val_string(unsigned int pos, const String &val) {
+OneError Array::set_val_string(unsigned int pos, const String &val) {
     if (_doc.Size() <= pos) {
         return ONE_ERROR_ARRAY_POSITION_OUT_OF_BOUNDS;
     }
@@ -247,7 +247,7 @@ Error Array::set_val_string(unsigned int pos, const String &val) {
     return ONE_ERROR_NONE;
 }
 
-Error Array::set_val_array(unsigned int pos, const Array &val) {
+OneError Array::set_val_array(unsigned int pos, const Array &val) {
     if (_doc.Size() <= pos) {
         return ONE_ERROR_ARRAY_POSITION_OUT_OF_BOUNDS;
     }
@@ -263,7 +263,7 @@ Error Array::set_val_array(unsigned int pos, const Array &val) {
     return ONE_ERROR_NONE;
 }
 
-Error Array::set_val_object(unsigned int pos, const Object &val) {
+OneError Array::set_val_object(unsigned int pos, const Object &val) {
     if (_doc.Size() <= pos) {
         return ONE_ERROR_ARRAY_POSITION_OUT_OF_BOUNDS;
     }
