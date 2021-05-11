@@ -104,10 +104,20 @@ bool I3dSitesGetterWrapper::init(const AllocationHooks &hooks) {
         return false;
     }
 
-    //---------------
-    // Set callbacks.
-
     UE_LOG(LogTemp, Log, TEXT("I3dPingSitesWrapper init complete"));
+    return true;
+}
+
+bool I3dSitesGetterWrapper::init_http_callback() {
+    const std::lock_guard<std::mutex> lock(_wrapper);
+
+    auto err = i3d_ping_sites_getter_init(_sites_getter);
+    if (i3d_ping_is_error(err)) {
+        UE_LOG(LogTemp, Error, TEXT("ONE CLIENT: %s"),
+               *FString(i3d_ping_error_text(err)));
+        return false;
+    }
+
     return true;
 }
 

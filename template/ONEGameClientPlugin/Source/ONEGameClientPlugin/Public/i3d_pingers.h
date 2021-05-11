@@ -51,16 +51,25 @@ public:
 
     // Returns the number of pingers.
     UFUNCTION(BlueprintCallable, Category = "Pinger")
-    int64 pingers_size() const;
+    int32 pingers_size() const;
 
     UFUNCTION(BlueprintCallable, Category = "Pinger")
-    int64 last_time(int64 pos) const;
+    int32 last_time(int32 pos) const;
 
     UFUNCTION(BlueprintCallable, Category = "Pinger")
-    float average_time(int64 pos) const;
+    float average_time(int32 pos) const;
 
     UFUNCTION(BlueprintCallable, Category = "Pinger")
-    int64 ping_response_count(int64 pos) const;
+    int32 min_time(int32 pos) const;
+
+    UFUNCTION(BlueprintCallable, Category = "Pinger")
+    int32 max_time(int32 pos) const;
+
+    UFUNCTION(BlueprintCallable, Category = "Pinger")
+    float median_time(int32 pos) const;
+
+    UFUNCTION(BlueprintCallable, Category = "Pinger")
+    int32 ping_response_count(int32 pos) const;
 
     UFUNCTION(BlueprintCallable, Category = "Pinger")
     bool at_least_one_site_has_been_pinged() const;
