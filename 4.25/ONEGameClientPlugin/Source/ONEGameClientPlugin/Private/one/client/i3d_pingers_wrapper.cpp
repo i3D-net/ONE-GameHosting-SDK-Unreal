@@ -195,8 +195,9 @@ bool I3dPingersWrapper::pingers_size(unsigned int &size) const {
 bool I3dPingersWrapper::statistics(unsigned int pos, PingStatistics &s) const {
     const std::lock_guard<std::mutex> lock(_wrapper);
 
-    I3dPingError err = i3d_ping_pingers_statistics(_pingers, pos, &(s.last_time), &(s.average_time),
-                                                   &(s.ping_response_count));
+    I3dPingError err = i3d_ping_pingers_statistics(
+        _pingers, pos, &(s.last_time), &(s.average_time), &(s.min_time), &(s.max_time),
+        &(s.median_time), &(s.ping_response_count));
     if (i3d_ping_is_error(err)) {
         UE_LOG(LogTemp, Error, TEXT("ONE CLIENT: %s"),
                *FString(i3d_ping_error_text(err)));

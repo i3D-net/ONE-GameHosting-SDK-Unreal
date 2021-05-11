@@ -68,7 +68,7 @@ void AI3dPingers::shutdown() {
     _i3d_pingers.shutdown();
 }
 
-int64 AI3dPingers::pingers_size() const {
+int32 AI3dPingers::pingers_size() const {
     unsigned int size = 0;
     if (!_i3d_pingers.pingers_size(size)) {
         UE_LOG(LogTemp, Error, TEXT("I3D PINGER: failed to get pingers size"));
@@ -78,7 +78,7 @@ int64 AI3dPingers::pingers_size() const {
     return size;
 }
 
-int64 AI3dPingers::last_time(int64 pos) const {
+int32 AI3dPingers::last_time(int32 pos) const {
     I3dPingersWrapper::PingStatistics s;
     if (!_i3d_pingers.statistics(pos, s)) {
         UE_LOG(LogTemp, Error, TEXT("I3D PINGER: failed to get last time"));
@@ -87,19 +87,46 @@ int64 AI3dPingers::last_time(int64 pos) const {
     return s.last_time;
 }
 
-float AI3dPingers::average_time(int64 pos) const {
+float AI3dPingers::average_time(int32 pos) const {
     I3dPingersWrapper::PingStatistics s;
     if (!_i3d_pingers.statistics(pos, s)) {
-        UE_LOG(LogTemp, Error, TEXT("I3D PINGER: failed to get last time"));
+        UE_LOG(LogTemp, Error, TEXT("I3D PINGER: failed to get average time"));
         return 0;
     }
     return static_cast<float>(s.average_time);
 }
 
-int64 AI3dPingers::ping_response_count(int64 pos) const {
+int32 AI3dPingers::min_time(int32 pos) const {
     I3dPingersWrapper::PingStatistics s;
     if (!_i3d_pingers.statistics(pos, s)) {
-        UE_LOG(LogTemp, Error, TEXT("I3D PINGER: failed to get last time"));
+        UE_LOG(LogTemp, Error, TEXT("I3D PINGER: failed to get average time"));
+        return 0;
+    }
+    return s.min_time;
+}
+
+int32 AI3dPingers::max_time(int32 pos) const {
+    I3dPingersWrapper::PingStatistics s;
+    if (!_i3d_pingers.statistics(pos, s)) {
+        UE_LOG(LogTemp, Error, TEXT("I3D PINGER: failed to get average time"));
+        return 0;
+    }
+    return s.max_time;
+}
+
+float AI3dPingers::median_time(int32 pos) const {
+    I3dPingersWrapper::PingStatistics s;
+    if (!_i3d_pingers.statistics(pos, s)) {
+        UE_LOG(LogTemp, Error, TEXT("I3D PINGER: failed to get average time"));
+        return 0;
+    }
+    return static_cast<float>(s.median_time);
+}
+
+int32 AI3dPingers::ping_response_count(int32 pos) const {
+    I3dPingersWrapper::PingStatistics s;
+    if (!_i3d_pingers.statistics(pos, s)) {
+        UE_LOG(LogTemp, Error, TEXT("I3D PINGER: failed to get ping response count"));
         return 0;
     }
     return s.ping_response_count;

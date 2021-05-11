@@ -51,6 +51,8 @@ public:
     // alloc and free are optional allocation override handlers. Both may be nullptr,
     // otherwise both are required.
     bool init(const AllocationHooks &hooks);
+    // Finalize the initialization with the http callback final check.
+    bool init_http_callback();
     void shutdown();
 
     // Must called often (e.g. each frame) until the status change to Ready. That means
