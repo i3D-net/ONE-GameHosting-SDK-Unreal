@@ -2,7 +2,7 @@
 
 #pragma once
 
-namespace i3d_ping_integration {
+namespace one_integration {
 
 // Provides example global allocation hooks used to override the allocations
 // made within the ONE Game Hosting SDK.
@@ -22,4 +22,4 @@ void *realloc(void *p, unsigned int bytes) {
 
 }  // namespace allocation
 
-}  // namespace i3d_ping_integration
+}  // namespace one_integration

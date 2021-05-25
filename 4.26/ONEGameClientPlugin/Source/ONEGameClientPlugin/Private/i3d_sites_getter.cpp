@@ -1,7 +1,6 @@
 // Copyright i3D.net, 2021. All Rights Reserved.
 
 #include "i3d_sites_getter.h"
-#include "i3d_allocator.h"
 
 #include "i3d_ip_list.h"
 
@@ -44,11 +43,9 @@ void AI3dSitesGetter::init() {
     if (!_quiet) UE_LOG(LogTemp, Log, TEXT("I3D SITES GETTER: init"));
 
     //------------------------------------------------------------
-    // Set allocator hooks and initialization.
+    // Initialization.
 
-    I3dSitesGetterWrapper::AllocationHooks hooks(allocation::alloc, allocation::free,
-                                                 allocation::realloc);
-    if (!_i3d_sites_getter.init(hooks)) {
+    if (!_i3d_sites_getter.init()) {
         UE_LOG(LogTemp, Error, TEXT("I3D SITES GETTER: failed to init i3d sites getter"));
         return;
     }
@@ -228,7 +225,7 @@ void AI3dSitesGetter::http_request(const char *url,
         return;
     }
 
-    TSharedRef<IHttpRequest> HttpRequest = FHttpModule::Get().CreateRequest();
+    auto HttpRequest = FHttpModule::Get().CreateRequest();
     HttpRequest->SetVerb("GET");
     HttpRequest->SetURL(*FString::Printf(TEXT("%s"), *FString(url)));
     p->_parsing_callback = parsing_callback;

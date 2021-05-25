@@ -37,7 +37,7 @@ void allocator_set_realloc(void *(*callback)(void *, unsigned int size)) {
 
 I3dPingError sites_getter_create(I3dSitesGetterPtr *sites_getter) {
     if (sites_getter == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SITES_GETTER_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     auto p = allocator::create<SitesGetter>();
@@ -52,7 +52,7 @@ I3dPingError sites_getter_create(I3dSitesGetterPtr *sites_getter) {
 I3dPingError sites_getter_set_logger(I3dSitesGetterPtr sites_getter, I3dPingLogFn log_cb,
                                      void *userdata) {
     if (sites_getter == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SITES_GETTER_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     auto wrapper = [log_cb](void *userdata, LogLevel level, const String &message) {
@@ -77,7 +77,7 @@ void sites_getter_destroy(I3dSitesGetterPtr sites_getter) {
 I3dPingError sites_getter_init(I3dSitesGetterPtr sites_getter) {
     auto p = (SitesGetter *)(sites_getter);
     if (p == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SITES_GETTER_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     return p->init();
@@ -86,7 +86,7 @@ I3dPingError sites_getter_init(I3dSitesGetterPtr sites_getter) {
 I3dPingError sites_getter_update(I3dSitesGetterPtr sites_getter) {
     auto p = (SitesGetter *)(sites_getter);
     if (p == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SITES_GETTER_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     return p->update();
@@ -96,11 +96,11 @@ I3dPingError sites_getter_status(I3dSitesGetterPtr const sites_getter,
                                  I3dSitesGetterStatus *status) {
     auto p = (SitesGetter *)(sites_getter);
     if (p == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SITES_GETTER_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     if (status == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_STATUS_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     *status = static_cast<I3dSitesGetterStatus>(p->status());
@@ -115,11 +115,11 @@ I3dPingError sites_getter_set_http_get_callback(
     void *userdata) {
     auto p = (SitesGetter *)(sites_getter);
     if (p == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SITES_GETTER_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     if (callback == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_HTTP_GET_CALLBACK_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     return p->set_http_get_callback(callback, userdata);
@@ -129,11 +129,11 @@ I3dPingError sites_getter_site_list_size(I3dSitesGetterPtr sites_getter,
                                          unsigned int *size) {
     auto p = (SitesGetter *)(sites_getter);
     if (p == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SITES_GETTER_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     if (size == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SIZE_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     *size = p->sites_size();
@@ -144,63 +144,45 @@ I3dPingError sites_getter_list_site_continent_id(I3dSitesGetterPtr sites_getter,
                                                  unsigned int pos, int *continent_id) {
     auto p = (SitesGetter *)(sites_getter);
     if (p == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SITES_GETTER_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     if (continent_id == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_CONTINENT_ID_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     return p->site_continent_id(pos, *continent_id);
 }
 
-I3dPingError sites_getter_list_site_country_size(I3dSitesGetterPtr sites_getter,
-                                                 unsigned int pos, unsigned int *size) {
-    auto p = (SitesGetter *)(sites_getter);
-    if (p == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SITES_GETTER_IS_NULLPTR;
-    }
-
-    if (size == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SIZE_IS_NULLPTR;
-    }
-
-    String s;
-    auto err = p->site_country(pos, s);
-    if (i3d_ping_is_error(err)) {
-        return err;
-    }
-
-    *size = s.size();
-    return I3D_PING_ERROR_NONE;
-}
-
 I3dPingError sites_getter_list_site_country(I3dSitesGetterPtr sites_getter,
-                                            unsigned int pos, char *country,
-                                            unsigned int size) {
+                                            unsigned int pos, char country[64]) {
     auto p = (SitesGetter *)(sites_getter);
     if (p == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SITES_GETTER_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     if (country == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_COUNTRY_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     String s;
+    // To take into account the trailing '\0' character.
+    s.reserve(63);
+
     auto err = p->site_country(pos, s);
     if (i3d_ping_is_error(err)) {
         return err;
     }
 
-    if (size < static_cast<unsigned int>(s.size())) {
-        return I3D_PING_ERROR_VALIDATION_SIZE_IS_TOO_SMALL;
+    if (63 < static_cast<unsigned int>(s.size())) {
+        return I3D_PING_ERROR_VALIDATION_BUFFER_IS_TOO_SMALL;
     }
 
     for (size_t i = 0; i < s.size(); ++i) {
         country[i] = s[i];
     }
 
+    country[s.size()] = '\0';
     return I3D_PING_ERROR_NONE;
 }
 
@@ -209,115 +191,76 @@ I3dPingError sites_getter_list_site_dc_location_id(I3dSitesGetterPtr sites_gette
                                                    int *dc_location_id) {
     auto p = (SitesGetter *)(sites_getter);
     if (p == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SITES_GETTER_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     if (dc_location_id == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_DC_LOCATION_ID_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     return p->site_dc_location_id(pos, *dc_location_id);
 }
 
-I3dPingError sites_getter_list_site_dc_location_name_size(I3dSitesGetterPtr sites_getter,
-                                                          unsigned int pos,
-                                                          unsigned int *size) {
-    auto p = (SitesGetter *)(sites_getter);
-    if (p == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SITES_GETTER_IS_NULLPTR;
-    }
-
-    if (size == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SIZE_IS_NULLPTR;
-    }
-
-    String s;
-    auto err = p->site_dc_location_name(pos, s);
-    if (i3d_ping_is_error(err)) {
-        return err;
-    }
-
-    *size = s.size();
-    return I3D_PING_ERROR_NONE;
-}
-
 I3dPingError sites_getter_list_site_dc_location_name(I3dSitesGetterPtr sites_getter,
                                                      unsigned int pos,
-                                                     char *dc_location_name,
-                                                     unsigned int size) {
+                                                     char dc_location_name[64]) {
     auto p = (SitesGetter *)(sites_getter);
     if (p == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SITES_GETTER_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     if (dc_location_name == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_DC_LOCATION_NAME_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     String s;
+    // To take into account the trailing '\0' character.
+    s.reserve(63);
     auto err = p->site_dc_location_name(pos, s);
     if (i3d_ping_is_error(err)) {
         return err;
     }
 
-    if (size < static_cast<unsigned int>(s.size())) {
-        return I3D_PING_ERROR_VALIDATION_SIZE_IS_TOO_SMALL;
+    if (63 < static_cast<unsigned int>(s.size())) {
+        return I3D_PING_ERROR_VALIDATION_BUFFER_IS_TOO_SMALL;
     }
 
     for (size_t i = 0; i < s.size(); ++i) {
         dc_location_name[i] = s[i];
     }
 
-    return I3D_PING_ERROR_NONE;
-}
-
-I3dPingError sites_getter_list_site_hostname_size(I3dSitesGetterPtr sites_getter,
-                                                  unsigned int pos, unsigned int *size) {
-    auto p = (SitesGetter *)(sites_getter);
-    if (p == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SITES_GETTER_IS_NULLPTR;
-    }
-
-    if (size == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SIZE_IS_NULLPTR;
-    }
-
-    String s;
-    auto err = p->site_hostname(pos, s);
-    if (i3d_ping_is_error(err)) {
-        return err;
-    }
-
-    *size = s.size();
+    dc_location_name[s.size()] = '\0';
     return I3D_PING_ERROR_NONE;
 }
 
 I3dPingError sites_getter_list_site_hostname(I3dSitesGetterPtr sites_getter,
-                                             unsigned int pos, char *hostname,
-                                             unsigned int size) {
+                                             unsigned int pos, char hostname[64]) {
     auto p = (SitesGetter *)(sites_getter);
     if (p == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SITES_GETTER_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     if (hostname == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_HOSTNAME_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     String s;
+    // To take into account the trailing '\0' character.
+    s.reserve(63);
     auto err = p->site_hostname(pos, s);
     if (i3d_ping_is_error(err)) {
         return err;
     }
 
-    if (size < static_cast<unsigned int>(s.size())) {
-        return I3D_PING_ERROR_VALIDATION_SIZE_IS_TOO_SMALL;
+    if (63 < static_cast<unsigned int>(s.size())) {
+        return I3D_PING_ERROR_VALIDATION_BUFFER_IS_TOO_SMALL;
     }
 
     for (size_t i = 0; i < s.size(); ++i) {
         hostname[i] = s[i];
     }
 
+    hostname[s.size()] = '\0';
     return I3D_PING_ERROR_NONE;
 }
 
@@ -325,11 +268,11 @@ I3dPingError sites_getter_list_site_ipv4_size(I3dSitesGetterPtr sites_getter,
                                               unsigned int pos, unsigned int *size) {
     auto p = (SitesGetter *)(sites_getter);
     if (p == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SITES_GETTER_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     if (size == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SIZE_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     size_t s = 0;
@@ -342,54 +285,36 @@ I3dPingError sites_getter_list_site_ipv4_size(I3dSitesGetterPtr sites_getter,
     return I3D_PING_ERROR_NONE;
 }
 
-I3dPingError sites_getter_list_site_ipv4_ip_size(I3dSitesGetterPtr sites_getter,
-                                                 unsigned int pos, unsigned int ip_pos,
-                                                 unsigned int *size) {
-    auto p = (SitesGetter *)(sites_getter);
-    if (p == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SITES_GETTER_IS_NULLPTR;
-    }
-
-    if (size == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SIZE_IS_NULLPTR;
-    }
-
-    String s;
-    auto err = p->site_ipv4(pos, ip_pos, s);
-    if (i3d_ping_is_error(err)) {
-        return err;
-    }
-
-    *size = s.size();
-    return I3D_PING_ERROR_NONE;
-}
-
 I3dPingError sites_getter_list_site_ipv4_ip(I3dSitesGetterPtr sites_getter,
                                             unsigned int pos, unsigned int ip_pos,
-                                            char *ip, unsigned int size) {
+                                            char ip[16]) {
     auto p = (SitesGetter *)(sites_getter);
     if (p == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SITES_GETTER_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     if (ip == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_IP_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     String s;
+    // To take into account the trailing '\0' character.
+    s.reserve(15);
+
     auto err = p->site_ipv4(pos, ip_pos, s);
     if (i3d_ping_is_error(err)) {
         return err;
     }
 
-    if (size < static_cast<unsigned int>(s.size())) {
-        return I3D_PING_ERROR_VALIDATION_SIZE_IS_TOO_SMALL;
+    if (15 < static_cast<unsigned int>(s.size())) {
+        return I3D_PING_ERROR_VALIDATION_BUFFER_IS_TOO_SMALL;
     }
 
     for (size_t i = 0; i < s.size(); ++i) {
         ip[i] = s[i];
     }
 
+    ip[s.size()] = '\0';
     return I3D_PING_ERROR_NONE;
 }
 
@@ -397,11 +322,11 @@ I3dPingError sites_getter_list_site_ipv6_size(I3dSitesGetterPtr sites_getter,
                                               unsigned int pos, unsigned int *size) {
     auto p = (SitesGetter *)(sites_getter);
     if (p == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SITES_GETTER_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     if (size == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SIZE_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     size_t s = 0;
@@ -414,54 +339,36 @@ I3dPingError sites_getter_list_site_ipv6_size(I3dSitesGetterPtr sites_getter,
     return I3D_PING_ERROR_NONE;
 }
 
-I3dPingError sites_getter_list_site_ipv6_ip_size(I3dSitesGetterPtr sites_getter,
-                                                 unsigned int pos, unsigned int ip_pos,
-                                                 unsigned int *size) {
-    auto p = (SitesGetter *)(sites_getter);
-    if (p == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SITES_GETTER_IS_NULLPTR;
-    }
-
-    if (size == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SIZE_IS_NULLPTR;
-    }
-
-    String s;
-    auto err = p->site_ipv6(pos, ip_pos, s);
-    if (i3d_ping_is_error(err)) {
-        return err;
-    }
-
-    *size = s.size();
-    return I3D_PING_ERROR_NONE;
-}
-
 I3dPingError sites_getter_list_site_ipv6_ip(I3dSitesGetterPtr sites_getter,
                                             unsigned int pos, unsigned int ip_pos,
-                                            char *ip, unsigned int size) {
+                                            char ip[46]) {
     auto p = (SitesGetter *)(sites_getter);
     if (p == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SITES_GETTER_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     if (ip == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_IP_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     String s;
+    // To take into account the trailing '\0' character.
+    s.reserve(45);
+
     auto err = p->site_ipv6(pos, ip_pos, s);
     if (i3d_ping_is_error(err)) {
         return err;
     }
 
-    if (size < static_cast<unsigned int>(s.size())) {
-        return I3D_PING_ERROR_VALIDATION_SIZE_IS_TOO_SMALL;
+    if (45 < static_cast<unsigned int>(s.size())) {
+        return I3D_PING_ERROR_VALIDATION_BUFFER_IS_TOO_SMALL;
     }
 
     for (size_t i = 0; i < s.size(); ++i) {
         ip[i] = s[i];
     }
 
+    ip[s.size()] = '\0';
     return I3D_PING_ERROR_NONE;
 }
 
@@ -469,12 +376,12 @@ I3dPingError sites_getter_ipv4_list(I3dSitesGetterPtr sites_getter,
                                     I3dIpListPtr ip_list) {
     auto p = (SitesGetter *)(sites_getter);
     if (p == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SITES_GETTER_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     auto ips = (IpList *)(ip_list);
     if (ips == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_IP_LIST_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     return p->ipv4_list(*ips);
@@ -484,12 +391,12 @@ I3dPingError sites_getter_ipv6_list(I3dSitesGetterPtr sites_getter,
                                     I3dIpListPtr ip_list) {
     auto p = (SitesGetter *)(sites_getter);
     if (p == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SITES_GETTER_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     auto ips = (IpList *)(ip_list);
     if (ips == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_IP_LIST_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     return p->ipv6_list(*ips);
@@ -497,7 +404,7 @@ I3dPingError sites_getter_ipv6_list(I3dSitesGetterPtr sites_getter,
 
 I3dPingError pingers_create(I3dPingersPtr *pingers) {
     if (pingers == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_PINGERS_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     auto p = allocator::create<Pingers>();
@@ -512,7 +419,7 @@ I3dPingError pingers_create(I3dPingersPtr *pingers) {
 I3dPingError pingers_set_logger(I3dPingersPtr pingers, I3dPingLogFn log_cb,
                                 void *userdata) {
     if (pingers == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_PINGERS_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     auto wrapper = [log_cb](void *userdata, LogLevel level, const String &message) {
@@ -537,12 +444,12 @@ void pingers_destroy(I3dPingersPtr pingers) {
 I3dPingError pingers_init(I3dPingersPtr pingers, I3dIpListPtr const ip_list) {
     auto p = (Pingers *)(pingers);
     if (p == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_PINGERS_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     auto ips = (IpList *)(ip_list);
     if (ips == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_IP_LIST_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     return p->init(*ips);
@@ -551,7 +458,7 @@ I3dPingError pingers_init(I3dPingersPtr pingers, I3dIpListPtr const ip_list) {
 I3dPingError pingers_update(I3dPingersPtr pingers) {
     auto p = (Pingers *)(pingers);
     if (p == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_PINGERS_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     return p->update();
@@ -560,11 +467,11 @@ I3dPingError pingers_update(I3dPingersPtr pingers) {
 I3dPingError pingers_status(I3dPingersPtr const pingers, I3dPingersStatus *status) {
     auto p = (Pingers *)(pingers);
     if (p == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_PINGERS_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     if (status == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_STATUS_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     *status = static_cast<I3dPingersStatus>(p->status());
@@ -574,11 +481,11 @@ I3dPingError pingers_status(I3dPingersPtr const pingers, I3dPingersStatus *statu
 I3dPingError pingers_size(I3dPingersPtr pingers, unsigned int *size) {
     auto p = (Pingers *)(pingers);
     if (p == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_PINGERS_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     if (size == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SIZE_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     *size = p->size();
@@ -592,31 +499,31 @@ I3dPingError i3d_ping_pingers_statistics(I3dPingersPtr pingers, unsigned int pos
                                          unsigned int *ping_response_count) {
     auto p = (Pingers *)(pingers);
     if (p == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_PINGERS_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     if (last_time == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_LAST_TIME_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     if (average_time == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_AVERAGE_TIME_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     if (min_time == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_MIN_TIME_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     if (max_time == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_MAX_TIME_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     if (median_time == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_MEDIAN_TIME_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     if (ping_response_count == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_PING_RESPONSE_COUNT_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     auto err = p->last_time(pos, *last_time);
@@ -655,11 +562,11 @@ I3dPingError i3d_ping_pingers_statistics(I3dPingersPtr pingers, unsigned int pos
 I3dPingError at_least_one_site_has_been_pinged(I3dPingersPtr pingers, bool *result) {
     auto p = (Pingers *)(pingers);
     if (p == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_PINGERS_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     if (result == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_RESULT_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     auto err = p->at_least_one_site_has_been_pinged(*result);
@@ -673,11 +580,11 @@ I3dPingError at_least_one_site_has_been_pinged(I3dPingersPtr pingers, bool *resu
 I3dPingError all_sites_have_been_pinged(I3dPingersPtr pingers, bool *result) {
     auto p = (Pingers *)(pingers);
     if (p == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_PINGERS_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     if (result == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_RESULT_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     auto err = p->all_sites_have_been_pinged(*result);
@@ -690,7 +597,7 @@ I3dPingError all_sites_have_been_pinged(I3dPingersPtr pingers, bool *result) {
 
 I3dPingError ip_list_create(I3dIpListPtr *ip_list) {
     if (ip_list == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_IP_LIST_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     auto ips = allocator::create<IpList>();
@@ -714,7 +621,7 @@ void ip_list_destroy(I3dIpListPtr ip_list) {
 I3dPingError ip_list_clear(I3dIpListPtr ip_list) {
     auto ips = (IpList *)(ip_list);
     if (ips == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_IP_LIST_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     ips->clear();
@@ -724,11 +631,11 @@ I3dPingError ip_list_clear(I3dIpListPtr ip_list) {
 I3dPingError ip_list_push_back(I3dIpListPtr ip_list, const char *ip) {
     auto ips = (IpList *)(ip_list);
     if (ips == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_IP_LIST_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     if (ip == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_IP_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     ips->push_back(String(ip));
@@ -738,11 +645,11 @@ I3dPingError ip_list_push_back(I3dIpListPtr ip_list, const char *ip) {
 I3dPingError ip_list_size(I3dIpListPtr const ip_list, unsigned int *size) {
     auto ips = (IpList *)(ip_list);
     if (ips == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_IP_LIST_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     if (size == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SIZE_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     size_t s = 0;
@@ -755,11 +662,11 @@ I3dPingError ip_list_ip_size(I3dIpListPtr const ip_list, unsigned int pos,
                              unsigned int *size) {
     auto ips = (IpList *)(ip_list);
     if (ips == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_IP_LIST_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     if (size == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SIZE_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     String ip;
@@ -773,14 +680,10 @@ I3dPingError ip_list_ip_size(I3dIpListPtr const ip_list, unsigned int pos,
 }
 
 I3dPingError ip_list_ip(I3dIpListPtr const ip_list, unsigned int pos, char *ip,
-                        unsigned int *size) {
+                        unsigned int size) {
     auto ips = (IpList *)(ip_list);
     if (ips == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_PINGERS_IS_NULLPTR;
-    }
-
-    if (size == nullptr) {
-        return I3D_PING_ERROR_VALIDATION_SIZE_IS_NULLPTR;
+        return I3D_PING_ERROR_VALIDATION_PARAM_IS_NULLPTR;
     }
 
     String s;
@@ -789,8 +692,8 @@ I3dPingError ip_list_ip(I3dIpListPtr const ip_list, unsigned int pos, char *ip,
         return err;
     }
 
-    if (*size < static_cast<unsigned int>(s.size())) {
-        return I3D_PING_ERROR_VALIDATION_SIZE_IS_TOO_SMALL;
+    if (size < static_cast<unsigned int>(s.size())) {
+        return I3D_PING_ERROR_VALIDATION_BUFFER_IS_TOO_SMALL;
     }
 
     for (size_t i = 0; i < s.size(); ++i) {
@@ -865,16 +768,9 @@ I3dPingError i3d_ping_sites_getter_list_site_continent_id(I3dSitesGetterPtr site
     return ping::sites_getter_list_site_continent_id(sites_getter, pos, continent_id);
 }
 
-I3dPingError i3d_ping_sites_getter_list_site_country_size(I3dSitesGetterPtr sites_getter,
-                                                          unsigned int pos,
-                                                          unsigned int *size) {
-    return ping::sites_getter_list_site_country_size(sites_getter, pos, size);
-}
-
 I3dPingError i3d_ping_sites_getter_list_site_country(I3dSitesGetterPtr sites_getter,
-                                                     unsigned int pos, char *country,
-                                                     unsigned int size) {
-    return ping::sites_getter_list_site_country(sites_getter, pos, country, size);
+                                                     unsigned int pos, char country[64]) {
+    return ping::sites_getter_list_site_country(sites_getter, pos, country);
 }
 
 I3dPingError i3d_ping_sites_getter_list_site_dc_location_id(
@@ -882,28 +778,16 @@ I3dPingError i3d_ping_sites_getter_list_site_dc_location_id(
     return ping::sites_getter_list_site_dc_location_id(sites_getter, pos, dc_location_id);
 }
 
-I3dPingError i3d_ping_sites_getter_list_site_dc_location_name_size(
-    I3dSitesGetterPtr sites_getter, unsigned int pos, unsigned int *size) {
-    return ping::sites_getter_list_site_dc_location_name_size(sites_getter, pos, size);
-}
-
 I3dPingError i3d_ping_sites_getter_list_site_dc_location_name(
-    I3dSitesGetterPtr sites_getter, unsigned int pos, char *dc_location_name,
-    unsigned int size) {
+    I3dSitesGetterPtr sites_getter, unsigned int pos, char dc_location_name[64]) {
     return ping::sites_getter_list_site_dc_location_name(sites_getter, pos,
-                                                         dc_location_name, size);
-}
-
-I3dPingError i3d_ping_sites_getter_list_site_hostname_size(I3dSitesGetterPtr sites_getter,
-                                                           unsigned int pos,
-                                                           unsigned int *size) {
-    return ping::sites_getter_list_site_hostname_size(sites_getter, pos, size);
+                                                         dc_location_name);
 }
 
 I3dPingError i3d_ping_sites_getter_list_site_hostname(I3dSitesGetterPtr sites_getter,
-                                                      unsigned int pos, char *hostname,
-                                                      unsigned int size) {
-    return ping::sites_getter_list_site_hostname(sites_getter, pos, hostname, size);
+                                                      unsigned int pos,
+                                                      char hostname[64]) {
+    return ping::sites_getter_list_site_hostname(sites_getter, pos, hostname);
 }
 
 I3dPingError i3d_ping_sites_getter_list_site_ipv4_size(I3dSitesGetterPtr sites_getter,
@@ -912,18 +796,10 @@ I3dPingError i3d_ping_sites_getter_list_site_ipv4_size(I3dSitesGetterPtr sites_g
     return ping::sites_getter_list_site_ipv4_size(sites_getter, pos, size);
 }
 
-I3dPingError i3d_ping_sites_getter_list_site_ipv4_ip_size(I3dSitesGetterPtr sites_getter,
-                                                          unsigned int pos,
-                                                          unsigned int ip_pos,
-                                                          unsigned int *size) {
-    return ping::sites_getter_list_site_ipv4_ip_size(sites_getter, pos, ip_pos, size);
-}
-
 I3dPingError i3d_ping_sites_getter_list_site_ipv4_ip(I3dSitesGetterPtr sites_getter,
                                                      unsigned int pos,
-                                                     unsigned int ip_pos, char *ip,
-                                                     unsigned int size) {
-    return ping::sites_getter_list_site_ipv4_ip(sites_getter, pos, ip_pos, ip, size);
+                                                     unsigned int ip_pos, char ip[16]) {
+    return ping::sites_getter_list_site_ipv4_ip(sites_getter, pos, ip_pos, ip);
 }
 
 I3dPingError i3d_ping_sites_getter_list_site_ipv6_size(I3dSitesGetterPtr sites_getter,
@@ -932,18 +808,10 @@ I3dPingError i3d_ping_sites_getter_list_site_ipv6_size(I3dSitesGetterPtr sites_g
     return ping::sites_getter_list_site_ipv6_size(sites_getter, pos, size);
 }
 
-I3dPingError i3d_ping_sites_getter_list_site_ipv6_ip_size(I3dSitesGetterPtr sites_getter,
-                                                          unsigned int pos,
-                                                          unsigned int ip_pos,
-                                                          unsigned int *size) {
-    return ping::sites_getter_list_site_ipv6_ip_size(sites_getter, pos, ip_pos, size);
-}
-
 I3dPingError i3d_ping_sites_getter_list_site_ipv6_ip(I3dSitesGetterPtr sites_getter,
                                                      unsigned int pos,
-                                                     unsigned int ip_pos, char *ipv6,
-                                                     unsigned int size) {
-    return ping::sites_getter_list_site_ipv6_ip(sites_getter, pos, ip_pos, ipv6, size);
+                                                     unsigned int ip_pos, char ipv6[46]) {
+    return ping::sites_getter_list_site_ipv6_ip(sites_getter, pos, ip_pos, ipv6);
 }
 
 I3dPingError i3d_ping_sites_getter_ipv4_list(I3dSitesGetterPtr sites_getter,
@@ -1032,7 +900,7 @@ I3dPingError i3d_ping_ip_list_ip_size(I3dIpListPtr const ip_list, unsigned int p
 }
 
 I3dPingError i3d_ping_ip_list_ip(I3dIpListPtr const ip_list, unsigned int pos, char *ip,
-                                 unsigned int *size) {
+                                 unsigned int size) {
     return ping::ip_list_ip(ip_list, pos, ip, size);
 }
 }

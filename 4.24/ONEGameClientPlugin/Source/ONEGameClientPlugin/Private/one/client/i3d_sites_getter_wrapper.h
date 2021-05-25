@@ -34,23 +34,7 @@ public:
 
     //------------
     // Life cycle.
-
-    struct AllocationHooks {
-        // The hooks are optional, they can be left null.
-        AllocationHooks() : alloc(nullptr), free(nullptr), realloc(nullptr) {}
-        AllocationHooks(std::function<void *(size_t)> alloc_in,
-                        std::function<void(void *)> free_in,
-                        std::function<void *(void *, size_t)> realloc_in)
-            : alloc(alloc_in), free(free_in), realloc(realloc_in) {}
-
-        std::function<void *(size_t)> alloc;
-        std::function<void(void *)> free;
-        std::function<void *(void *, size_t)> realloc;
-    };
-
-    // alloc and free are optional allocation override handlers. Both may be nullptr,
-    // otherwise both are required.
-    bool init(const AllocationHooks &hooks);
+    bool init();
     // Finalize the initialization with the http callback final check.
     bool init_http_callback();
     void shutdown();
