@@ -15,24 +15,6 @@
 
 using namespace one_integration;
 
-// Provides example global allocation hooks used to override the allocations
-// made within the ONE Game Hosting SDK.
-namespace allocation {
-
-void *alloc(size_t bytes) {
-    return std::malloc(bytes);
-}
-
-void free(void *p) {
-    std::free(p);
-}
-
-void *realloc(void *p, size_t bytes) {
-    return std::realloc(p, bytes);
-}
-
-}  // namespace allocation
-
 AOneArcusServer::AOneArcusServer() : _one_server(), _quiet(true), _is_initialized(false) {
     // Set to false to avoid duplicating the AOneArcusServer on the client side.
     bReplicates = false;
@@ -61,11 +43,9 @@ void AOneArcusServer::init(int64 port, int64 players, int64 max_players, FString
     if (!_quiet) UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: init"));
 
     //------------------------------------------------------------
-    // Set allocator hooks and initialization.
+    // Initialization.
 
-    OneServerWrapper::AllocationHooks hooks(allocation::alloc, allocation::free,
-                                            allocation::realloc);
-    if (!_one_server.init(port, hooks)) {
+    if (!_one_server.init(port)) {
         UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: failed to init one server"));
         return;
     }

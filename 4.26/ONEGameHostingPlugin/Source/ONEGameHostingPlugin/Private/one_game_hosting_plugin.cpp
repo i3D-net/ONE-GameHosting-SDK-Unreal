@@ -2,9 +2,20 @@
 
 #include "one_game_hosting_plugin.h"
 
+#include "one_allocator.h"
+
 #define LOCTEXT_NAMESPACE "FONEGameHostingPluginModule"
 
-void FONEGameHostingPluginModule::StartupModule() {}
+using namespace one_integration;
+
+void FONEGameHostingPluginModule::StartupModule() {
+    //----------------------
+    // Set custom allocator.
+
+    one_allocator_set_alloc(allocation::alloc);
+    one_allocator_set_free(allocation::free);
+    one_allocator_set_realloc(allocation::realloc);
+}
 
 void FONEGameHostingPluginModule::ShutdownModule() {}
 

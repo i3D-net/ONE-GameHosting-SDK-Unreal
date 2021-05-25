@@ -15,11 +15,6 @@
 namespace one_integration {
 namespace {
 
-// Local cached memory function overrides, to assist in override pattern.
-std::function<void *(size_t)> _alloc = nullptr;
-std::function<void(void *)> _free = nullptr;
-std::function<void *(void *, size_t)> _realloc = nullptr;
-
 // Logger to pass into One.
 void log(void *userdata, OneLogLevel level, const char *message) {
     if (userdata == nullptr) {
@@ -64,37 +59,12 @@ OneServerWrapper::~OneServerWrapper() {
     shutdown();
 }
 
-bool OneServerWrapper::init(unsigned int port, const AllocationHooks &hooks) {
+bool OneServerWrapper::init(unsigned int port) {
     const std::lock_guard<std::mutex> lock(_wrapper);
 
     if (_server != nullptr) {
         UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: already initialized"));
         return false;
-    }
-
-    //----------------------
-    // Set custom allocator.
-
-    if (hooks.alloc && hooks.free && hooks.realloc) {
-        // Cache off the overrides so that they can be called within the lambdas
-        // because lambdas with captures may not be passed to the C API.
-        _alloc = hooks.alloc;
-        _free = hooks.free;
-        _realloc = hooks.realloc;
-        // Functions wrapper to remove lambda capture and convert to c interface (unsigned
-        // int).
-        auto alloc_wrapper = [](unsigned int bytes) -> void * {
-            return _alloc(static_cast<size_t>(bytes));
-        };
-
-        auto free_wrapper = [](void *p) -> void { _free(p); };
-        auto realloc_wrapper = [](void *p, unsigned int bytes) -> void * {
-            return _realloc(p, static_cast<size_t>(bytes));
-        };
-
-        one_allocator_set_alloc(alloc_wrapper);
-        one_allocator_set_free(free_wrapper);
-        one_allocator_set_realloc(realloc_wrapper);
     }
 
     //-----------------------

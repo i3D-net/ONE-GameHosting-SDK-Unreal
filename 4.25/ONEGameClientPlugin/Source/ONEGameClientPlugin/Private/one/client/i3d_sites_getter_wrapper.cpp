@@ -51,37 +51,12 @@ I3dSitesGetterWrapper::~I3dSitesGetterWrapper() {
     shutdown();
 }
 
-bool I3dSitesGetterWrapper::init(const AllocationHooks &hooks) {
+bool I3dSitesGetterWrapper::init() {
     const std::lock_guard<std::mutex> lock(_wrapper);
 
     if (_sites_getter != nullptr) {
         UE_LOG(LogTemp, Error, TEXT("ONE CLIENT: already initialized"));
         return false;
-    }
-
-    //----------------------
-    // Set custom allocator.
-
-    if (hooks.alloc && hooks.free && hooks.realloc) {
-        // Cache off the overrides so that they can be called within the lambdas
-        // because lambdas with captures may not be passed to the C API.
-        _sites_getter_alloc = hooks.alloc;
-        _sites_getter_free = hooks.free;
-        _sites_getter_realloc = hooks.realloc;
-        // Functions wrapper to remove lambda capture and convert to c interface (unsigned
-        // int).
-        auto alloc_wrapper = [](unsigned int bytes) -> void * {
-            return _sites_getter_alloc(static_cast<size_t>(bytes));
-        };
-
-        auto free_wrapper = [](void *p) -> void { _sites_getter_free(p); };
-        auto realloc_wrapper = [](void *p, unsigned int bytes) -> void * {
-            return _sites_getter_realloc(p, static_cast<size_t>(bytes));
-        };
-
-        i3d_ping_allocator_set_alloc(alloc_wrapper);
-        i3d_ping_allocator_set_free(free_wrapper);
-        i3d_ping_allocator_set_realloc(realloc_wrapper);
     }
 
     //-----------------------
@@ -241,18 +216,10 @@ bool I3dSitesGetterWrapper::site_continent_id(unsigned int pos, int &continent_i
 bool I3dSitesGetterWrapper::site_country(unsigned int pos, std::string &country) {
     const std::lock_guard<std::mutex> lock(_wrapper);
 
-    unsigned int size = 0;
+    country.clear();
+    country.reserve(64);
     I3dPingError err =
-        i3d_ping_sites_getter_list_site_country_size(_sites_getter, pos, &size);
-    if (i3d_ping_is_error(err)) {
-        UE_LOG(LogTemp, Error, TEXT("ONE CLIENT: %s"),
-               *FString(i3d_ping_error_text(err)));
-        return false;
-    }
-
-    country.resize(size);
-    err =
-        i3d_ping_sites_getter_list_site_country(_sites_getter, pos, &(country[0]), size);
+        i3d_ping_sites_getter_list_site_country(_sites_getter, pos, &(country[0]));
     if (i3d_ping_is_error(err)) {
         UE_LOG(LogTemp, Error, TEXT("ONE CLIENT: %s"),
                *FString(i3d_ping_error_text(err)));
@@ -280,18 +247,10 @@ bool I3dSitesGetterWrapper::site_dc_location_name(unsigned int pos,
                                                   std::string &dc_location_name) {
     const std::lock_guard<std::mutex> lock(_wrapper);
 
-    unsigned int size = 0;
-    I3dPingError err =
-        i3d_ping_sites_getter_list_site_dc_location_name_size(_sites_getter, pos, &size);
-    if (i3d_ping_is_error(err)) {
-        UE_LOG(LogTemp, Error, TEXT("ONE CLIENT: %s"),
-               *FString(i3d_ping_error_text(err)));
-        return false;
-    }
-
-    dc_location_name.resize(size);
-    err = i3d_ping_sites_getter_list_site_dc_location_name(_sites_getter, pos,
-                                                           &(dc_location_name[0]), size);
+    dc_location_name.clear();
+    dc_location_name.resize(64);
+    I3dPingError err = i3d_ping_sites_getter_list_site_dc_location_name(_sites_getter, pos,
+                                                                        &(dc_location_name[0]));
     if (i3d_ping_is_error(err)) {
         UE_LOG(LogTemp, Error, TEXT("ONE CLIENT: %s"),
                *FString(i3d_ping_error_text(err)));
@@ -304,18 +263,9 @@ bool I3dSitesGetterWrapper::site_dc_location_name(unsigned int pos,
 bool I3dSitesGetterWrapper::site_hostname(unsigned int pos, std::string &hostname) {
     const std::lock_guard<std::mutex> lock(_wrapper);
 
-    unsigned int size = 0;
-    I3dPingError err =
-        i3d_ping_sites_getter_list_site_hostname_size(_sites_getter, pos, &size);
-    if (i3d_ping_is_error(err)) {
-        UE_LOG(LogTemp, Error, TEXT("ONE CLIENT: %s"),
-               *FString(i3d_ping_error_text(err)));
-        return false;
-    }
-
-    hostname.resize(size);
-    err = i3d_ping_sites_getter_list_site_hostname(_sites_getter, pos, &(hostname[0]),
-                                                   size);
+    hostname.clear();
+    hostname.resize(64);
+    I3dPingError err = i3d_ping_sites_getter_list_site_hostname(_sites_getter, pos, &(hostname[0]));
     if (i3d_ping_is_error(err)) {
         UE_LOG(LogTemp, Error, TEXT("ONE CLIENT: %s"),
                *FString(i3d_ping_error_text(err)));
@@ -344,18 +294,9 @@ bool I3dSitesGetterWrapper::site_ipv4(unsigned int pos, unsigned int ip_pos,
                                       std::string &ip) {
     const std::lock_guard<std::mutex> lock(_wrapper);
 
-    unsigned int size = 0;
-    I3dPingError err =
-        i3d_ping_sites_getter_list_site_ipv4_ip_size(_sites_getter, pos, ip_pos, &size);
-    if (i3d_ping_is_error(err)) {
-        UE_LOG(LogTemp, Error, TEXT("ONE CLIENT: %s"),
-               *FString(i3d_ping_error_text(err)));
-        return false;
-    }
-
-    ip.resize(size);
-    err = i3d_ping_sites_getter_list_site_ipv4_ip(_sites_getter, pos, ip_pos, &(ip[0]),
-                                                  size);
+    ip.clear();
+    ip.reserve(16);
+    I3dPingError err = i3d_ping_sites_getter_list_site_ipv4_ip(_sites_getter, pos, ip_pos, &(ip[0]));
     if (i3d_ping_is_error(err)) {
         UE_LOG(LogTemp, Error, TEXT("ONE CLIENT: %s"),
                *FString(i3d_ping_error_text(err)));
@@ -384,18 +325,9 @@ bool I3dSitesGetterWrapper::site_ipv6(unsigned int pos, unsigned int ip_pos,
                                       std::string &ip) {
     const std::lock_guard<std::mutex> lock(_wrapper);
 
-    unsigned int size = 0;
-    I3dPingError err =
-        i3d_ping_sites_getter_list_site_ipv6_ip_size(_sites_getter, pos, ip_pos, &size);
-    if (i3d_ping_is_error(err)) {
-        UE_LOG(LogTemp, Error, TEXT("ONE CLIENT: %s"),
-               *FString(i3d_ping_error_text(err)));
-        return false;
-    }
-
-    ip.resize(size);
-    err = i3d_ping_sites_getter_list_site_ipv6_ip(_sites_getter, pos, ip_pos, &(ip[0]),
-                                                  size);
+    ip.clear();
+    ip.reserve(46);
+    I3dPingError err = i3d_ping_sites_getter_list_site_ipv6_ip(_sites_getter, pos, ip_pos, &(ip[0]));
     if (i3d_ping_is_error(err)) {
         UE_LOG(LogTemp, Error, TEXT("ONE CLIENT: %s"),
                *FString(i3d_ping_error_text(err)));

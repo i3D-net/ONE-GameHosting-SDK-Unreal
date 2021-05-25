@@ -14,11 +14,6 @@
 namespace i3d_ping_integration {
 namespace {
 
-// Local cached memory function overrides, to assist in override pattern.
-std::function<void *(size_t)> _pingers_alloc = nullptr;
-std::function<void(void *)> _pingers_free = nullptr;
-std::function<void *(void *, size_t)> _pingers_realloc = nullptr;
-
 // Logger to pass into One.
 void pingers_log(void *userdata, I3dPingLogLevel level, const char *message) {
     if (userdata == nullptr) {
@@ -51,37 +46,12 @@ I3dPingersWrapper::~I3dPingersWrapper() {
     shutdown();
 }
 
-bool I3dPingersWrapper::init(I3dIpListPtr ip_list, const AllocationHooks &hooks) {
+bool I3dPingersWrapper::init(I3dIpListPtr ip_list) {
     const std::lock_guard<std::mutex> lock(_wrapper);
 
     if (_pingers != nullptr) {
         UE_LOG(LogTemp, Error, TEXT("ONE CLIENT: already initialized"));
         return false;
-    }
-
-    //----------------------
-    // Set custom allocator.
-
-    if (hooks.alloc && hooks.free && hooks.realloc) {
-        // Cache off the overrides so that they can be called within the lambdas
-        // because lambdas with captures may not be passed to the C API.
-        _pingers_alloc = hooks.alloc;
-        _pingers_free = hooks.free;
-        _pingers_realloc = hooks.realloc;
-        // Functions wrapper to remove lambda capture and convert to c interface (unsigned
-        // int).
-        auto alloc_wrapper = [](unsigned int bytes) -> void * {
-            return _pingers_alloc(static_cast<size_t>(bytes));
-        };
-
-        auto free_wrapper = [](void *p) -> void { _pingers_free(p); };
-        auto realloc_wrapper = [](void *p, unsigned int bytes) -> void * {
-            return _pingers_realloc(p, static_cast<size_t>(bytes));
-        };
-
-        i3d_ping_allocator_set_alloc(alloc_wrapper);
-        i3d_ping_allocator_set_free(free_wrapper);
-        i3d_ping_allocator_set_realloc(realloc_wrapper);
     }
 
     //-----------------------

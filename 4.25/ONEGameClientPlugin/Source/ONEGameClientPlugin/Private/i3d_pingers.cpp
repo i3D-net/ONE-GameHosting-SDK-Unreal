@@ -3,7 +3,6 @@
 #include "i3d_pingers.h"
 
 #include "i3d_ip_list.h"
-#include "i3d_allocator.h"
 
 #include <one/ping/c_error.h>
 
@@ -32,11 +31,9 @@ void AI3dPingers::init(UI3dIpList *ip_list) {
     if (!_quiet) UE_LOG(LogTemp, Log, TEXT("I3D PINGER: init"));
 
     //------------------------------------------------------------
-    // Set allocator hooks and initialization.
+    // Initialization.
 
-    I3dPingersWrapper::AllocationHooks hooks(allocation::alloc, allocation::free,
-                                             allocation::realloc);
-    if (!_i3d_pingers.init(ip_list->list(), hooks)) {
+    if (!_i3d_pingers.init(ip_list->list())) {
         UE_LOG(LogTemp, Error, TEXT("I3D PINGER: failed to init i3d pingers"));
         return;
     }
