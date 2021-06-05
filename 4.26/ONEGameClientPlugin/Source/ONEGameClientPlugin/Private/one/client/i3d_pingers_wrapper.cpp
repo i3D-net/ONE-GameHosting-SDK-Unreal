@@ -57,7 +57,7 @@ bool I3dPingersWrapper::init(I3dIpListPtr ip_list) {
     //-----------------------
     // Create the i3D Pinger.
 
-    I3dPingError err = i3d_ping_pingers_create(&_pingers);
+    I3dPingError err = i3d_ping_pingers_create(&_pingers, ip_list);
     if (i3d_ping_is_error(err)) {
         UE_LOG(LogTemp, Error, TEXT("ONE CLIENT: %s"),
                *FString(i3d_ping_error_text(err)));
@@ -67,13 +67,6 @@ bool I3dPingersWrapper::init(I3dIpListPtr ip_list) {
     // Set custom logger - optional.
     err = i3d_ping_pingers_set_logger(_pingers, pingers_log,
                                       nullptr);  // null userdata as global log is used.
-    if (i3d_ping_is_error(err)) {
-        UE_LOG(LogTemp, Error, TEXT("ONE CLIENT: %s"),
-               *FString(i3d_ping_error_text(err)));
-        return false;
-    }
-
-    err = i3d_ping_pingers_init(_pingers, ip_list);
     if (i3d_ping_is_error(err)) {
         UE_LOG(LogTemp, Error, TEXT("ONE CLIENT: %s"),
                *FString(i3d_ping_error_text(err)));

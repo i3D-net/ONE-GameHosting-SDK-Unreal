@@ -51,7 +51,10 @@ I3dSitesGetterWrapper::~I3dSitesGetterWrapper() {
     shutdown();
 }
 
-bool I3dSitesGetterWrapper::init() {
+bool I3dSitesGetterWrapper::init(void (*callback)(const char *url,
+                                                  void (*)(bool success, const char *json, void *parsing_userdata),
+                                                  void *parsing_userdata, void *http_get_metadata),
+                                 void *userdata) {
     const std::lock_guard<std::mutex> lock(_wrapper);
 
     if (_sites_getter != nullptr) {
@@ -62,7 +65,7 @@ bool I3dSitesGetterWrapper::init() {
     //-----------------------
     // Create the i3D Ping Sites.
 
-    I3dPingError err = i3d_ping_sites_getter_create(&_sites_getter);
+    I3dPingError err = i3d_ping_sites_getter_create(&_sites_getter, callback, userdata);
     if (i3d_ping_is_error(err)) {
         UE_LOG(LogTemp, Error, TEXT("ONE CLIENT: %s"),
                *FString(i3d_ping_error_text(err)));
@@ -80,19 +83,6 @@ bool I3dSitesGetterWrapper::init() {
     }
 
     UE_LOG(LogTemp, Log, TEXT("I3dPingSitesWrapper init complete"));
-    return true;
-}
-
-bool I3dSitesGetterWrapper::init_http_callback() {
-    const std::lock_guard<std::mutex> lock(_wrapper);
-
-    auto err = i3d_ping_sites_getter_init(_sites_getter);
-    if (i3d_ping_is_error(err)) {
-        UE_LOG(LogTemp, Error, TEXT("ONE CLIENT: %s"),
-               *FString(i3d_ping_error_text(err)));
-        return false;
-    }
-
     return true;
 }
 
@@ -164,24 +154,6 @@ I3dSitesGetterWrapper::Status I3dSitesGetterWrapper::status() const {
         default:
             return Status::unknown;
     }
-}
-
-bool I3dSitesGetterWrapper::set_http_get_callback(
-    void (*callback)(const char *url,
-                     void (*)(bool success, const char *json, void *parsing_userdata),
-                     void *parsing_userdata, void *http_get_metadata),
-    void *userdata) {
-    const std::lock_guard<std::mutex> lock(_wrapper);
-
-    I3dPingError err =
-        i3d_ping_sites_getter_set_http_get_callback(_sites_getter, callback, userdata);
-    if (i3d_ping_is_error(err)) {
-        UE_LOG(LogTemp, Error, TEXT("ONE CLIENT: %s"),
-               *FString(i3d_ping_error_text(err)));
-        return false;
-    }
-
-    return true;
 }
 
 bool I3dSitesGetterWrapper::sites_size(unsigned int &size) const {

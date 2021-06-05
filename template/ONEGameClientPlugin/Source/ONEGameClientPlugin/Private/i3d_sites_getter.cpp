@@ -45,24 +45,8 @@ void AI3dSitesGetter::init() {
     //------------------------------------------------------------
     // Initialization.
 
-    if (!_i3d_sites_getter.init()) {
+    if (!_i3d_sites_getter.init(&AI3dSitesGetter::http_request, this)) {
         UE_LOG(LogTemp, Error, TEXT("I3D SITES GETTER: failed to init i3d sites getter"));
-        return;
-    }
-
-    //------------------------------------------------------------
-    // Setting callbacks.
-
-    if (!_i3d_sites_getter.set_http_get_callback(&AI3dSitesGetter::http_request, this)) {
-        UE_LOG(LogTemp, Error, TEXT("I3D SITES GETTER: failed to set http get callback"));
-        return;
-    }
-
-    //------------------------------------------------------------
-    // Initialization last checks for valid callbacks.
-
-    if (!_i3d_sites_getter.init_http_callback()) {
-        UE_LOG(LogTemp, Error, TEXT("I3D SITES GETTER: failed to init http callback for i3d sites getter"));
         return;
     }
 
