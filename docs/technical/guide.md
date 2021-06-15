@@ -39,8 +39,8 @@ Finally, the `One Arcus Server` provides function to update the game server stat
 Follow the following instructions to change the version of the i3D.net ONE Game Hosting SDK code used in the plugin:
 
 1. Make sure you have both git repositories cloned locally.
-    * SDK repository: `git@git.i3d.net:one/ardentblue/one-game-sdk.git`
-    * SDK plugin repository: `git@git.i3d.net:one/ardentblue/one-gamehosting-sdk-unreal.git`
+    * SDK repository: `git@github.com:i3D-net/ONE-GameHosting-SDK.git`
+    * SDK plugin repository: `git@github.com:i3D-net/ONE-GameHosting-SDK-Unreal.git`
 2. Make sure that the sdk repository has the wanted SDK version checked out.
 3. Run the following script:
 ```bash
