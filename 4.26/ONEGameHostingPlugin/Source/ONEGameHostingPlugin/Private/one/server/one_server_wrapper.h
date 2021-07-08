@@ -94,6 +94,22 @@ public:
     // by Arcus, depending on the matchmaking design and features used.
     void set_application_instance_status(ApplicationInstanceStatus status);
 
+    struct ReverseMetadata {
+        ReverseMetadata() : map(), mode(), type() {}
+
+        std::array<char, codec::value_max_size_null_terminated()> map;   // Game map.
+        std::array<char, codec::value_max_size_null_terminated()> mode;  // Game mode.
+        std::array<char, codec::value_max_size_null_terminated()> type;  // Game type.
+
+        // Add extra custom game-specific properties here, if needed. Then
+        // these need to be added to a OneObjectPtr in the implementation
+        // and passed to the c_api. See the cpp file for an example.
+    };
+
+    // Set the game state to the current value. The wrapper uses this to send
+    // the current state to the ONE Platform, when requested to do so.
+    void send_reverse_metadata(const ReverseMetadata &);
+
     //------------------------
     // Incoming Arcus Messages
 
@@ -137,6 +153,13 @@ public:
         std::function<void(const OneObjectPtr data, void *userdata)> callback,
         void *userdata);
 
+    // Allows the game server to be notified of an incoming custom command message.
+    // The custom command response has a payload as defined at:
+    // https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#custom-command
+    void set_custom_command_callback(
+        std::function<void(const OneArrayPtr data, void *userdata)> callback,
+        void *userdata);
+
 private:
     // Callbacks potentially called by the arcus server.
     static void soft_stop(void *userdata, int timeout_seconds);
@@ -144,6 +167,7 @@ private:
     static void metadata(void *userdata, void *metadata);
     static void host_information(void *userdata, void *information);
     static void application_instance_information(void *userdata, void *information);
+    static void custom_command(void *userdata, void *data);
 
     // The Arcus Server itself.
     mutable std::mutex _wrapper;
@@ -168,6 +192,15 @@ private:
     std::function<void(const OneObjectPtr &, void *)>
         _application_instance_information_callback;
     void *_application_instance_information_userdata;
+
+    std::function<void(const OneArrayPtr &, void *)>
+        _custom_command_callback;
+    void *_custom_command_userdata;
+
+    OneArrayPtr _reverse_metadata_data;
+    OneObjectPtr _reverse_metadata_map;
+    OneObjectPtr _reverse_metadata_mode;
+    OneObjectPtr _reverse_metadata_type;
 };
 
 }  // namespace one_integration

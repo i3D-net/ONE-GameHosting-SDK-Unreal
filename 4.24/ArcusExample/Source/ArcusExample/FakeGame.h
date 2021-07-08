@@ -52,6 +52,11 @@ public:
     UFUNCTION(BlueprintCallable, Category = "ArcusExample")
     void applicationInstanceInformationPayloadParse(UOneArcusObject *object);
 
+    // Parsing the custom command payload.
+    // This implementation match the example found in the documentation.
+    UFUNCTION(BlueprintCallable, Category = "ArcusExample")
+    void customCommandPayloadParse(UOneArcusArray *array);
+
     // Message parsing functions
     // -------------------------------
 
@@ -70,6 +75,9 @@ public:
     UFUNCTION(BlueprintImplementableEvent, Category = "ArcusExample")
     void applicationInstanceInformationExtracted(const FString &fleet_id, int32 host_id,
                                                  bool is_virtual);
+
+    UFUNCTION(BlueprintImplementableEvent, Category = "ArcusExample")
+    void customCommandExtracted(const FString &command, const FString &argument);
 
     // Events for received messages with their Unreal basic types.
     // -------------------------------
