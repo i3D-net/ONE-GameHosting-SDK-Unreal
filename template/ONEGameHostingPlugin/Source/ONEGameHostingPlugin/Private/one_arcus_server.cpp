@@ -53,56 +53,7 @@ void AOneArcusServer::init(int64 port, int64 players, int64 max_players, FString
     //------------------------------------------------------------
     // Set initial game state.
 
-    OneServerWrapper::GameState game_state;
-    game_state.players = players;
-    game_state.max_players = max_players;
-
-    if (codec::value_max_size_null_terminated() < static_cast<size_t>(name.Len()) + 1) {
-        UE_LOG(LogTemp, Error, TEXT("name length is too big"));
-        return;
-    }
-
-    for (int32 i = 0; i < name.Len(); ++i) {
-        game_state.name.data()[i] = name[i];
-    }
-
-    game_state.name[name.Len()] = '\0';
-
-    if (codec::value_max_size_null_terminated() < static_cast<size_t>(map.Len()) + 1) {
-        UE_LOG(LogTemp, Error, TEXT("map length is too big"));
-        return;
-    }
-
-    for (int32 i = 0; i < map.Len(); ++i) {
-        game_state.map.data()[i] = map[i];
-    }
-
-    game_state.map[name.Len()] = '\0';
-
-    if (codec::value_max_size_null_terminated() < static_cast<size_t>(mode.Len()) + 1) {
-        UE_LOG(LogTemp, Error, TEXT("mode length is too big"));
-        return;
-    }
-
-    for (int32 i = 0; i < mode.Len(); ++i) {
-        game_state.mode.data()[i] = mode[i];
-    }
-
-    game_state.mode[mode.Len()] = '\0';
-
-    if (codec::value_max_size_null_terminated() <
-        static_cast<size_t>(version.Len()) + 1) {
-        UE_LOG(LogTemp, Error, TEXT("version length is too big"));
-        return;
-    }
-
-    for (int32 i = 0; i < version.Len(); ++i) {
-        game_state.version.data()[i] = version[i];
-    }
-
-    game_state.version[version.Len()] = '\0';
-
-    _one_server.set_game_state(game_state);
+    set_game_state(players, max_players, name, map, mode, version);
 
     //------------------------------------------------------------
     // Register notification callbacks.
@@ -113,8 +64,10 @@ void AOneArcusServer::init(int64 port, int64 players, int64 max_players, FString
     _one_server.set_host_information_callback(host_information_callback, this);
     _one_server.set_application_instance_information_callback(
         application_instance_information_callback, this);
+    _one_server.set_custom_command_callback(custom_command_callback, this);
 
-    _is_initialized = (_one_server.status() == OneServerWrapper::Status::waiting_for_client);
+    _is_initialized =
+        (_one_server.status() == OneServerWrapper::Status::waiting_for_client);
 
     if (!_is_initialized) {
         UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: failed to init one server"));
@@ -131,50 +84,57 @@ void AOneArcusServer::set_game_state(int64 players, int64 max_players, FString n
     game_state.players = players;
     game_state.max_players = max_players;
 
-    if (codec::value_max_size_null_terminated() < static_cast<size_t>(name.Len()) + 1) {
+    std::string name_string = std::string(TCHAR_TO_UTF8(*name));
+
+    if (codec::value_max_size_null_terminated() < name_string.size() + 1) {
         UE_LOG(LogTemp, Error, TEXT("name length is too big"));
         return;
     }
 
-    for (int32 i = 0; i < name.Len(); ++i) {
-        game_state.name.data()[i] = name[i];
+    for (size_t i = 0; i < name_string.size(); ++i) {
+        game_state.name.data()[i] = name_string[i];
     }
 
-    game_state.name[name.Len()] = '\0';
+    game_state.name[name_string.size()] = '\0';
 
-    if (codec::value_max_size_null_terminated() < static_cast<size_t>(map.Len()) + 1) {
+    std::string map_string = std::string(TCHAR_TO_UTF8(*map));
+
+    if (codec::value_max_size_null_terminated() < map_string.size() + 1) {
         UE_LOG(LogTemp, Error, TEXT("map length is too big"));
         return;
     }
 
-    for (int32 i = 0; i < map.Len(); ++i) {
-        game_state.map.data()[i] = map[i];
+    for (size_t i = 0; i < map_string.size(); ++i) {
+        game_state.map.data()[i] = map_string[i];
     }
 
-    game_state.map[name.Len()] = '\0';
+    game_state.map[map_string.size()] = '\0';
 
-    if (codec::value_max_size_null_terminated() < static_cast<size_t>(mode.Len()) + 1) {
+    std::string mode_string = std::string(TCHAR_TO_UTF8(*mode));
+
+    if (codec::value_max_size_null_terminated() < mode_string.size() + 1) {
         UE_LOG(LogTemp, Error, TEXT("mode length is too big"));
         return;
     }
 
-    for (int32 i = 0; i < mode.Len(); ++i) {
-        game_state.mode.data()[i] = mode[i];
+    for (size_t i = 0; i < mode_string.size(); ++i) {
+        game_state.mode.data()[i] = mode_string[i];
     }
 
-    game_state.mode[mode.Len()] = '\0';
+    game_state.mode[mode_string.size()] = '\0';
 
-    if (codec::value_max_size_null_terminated() <
-        static_cast<size_t>(version.Len()) + 1) {
+    std::string version_string = std::string(TCHAR_TO_UTF8(*version));
+
+    if (codec::value_max_size_null_terminated() < version_string.size() + 1) {
         UE_LOG(LogTemp, Error, TEXT("version length is too big"));
         return;
     }
 
-    for (int32 i = 0; i < version.Len(); ++i) {
-        game_state.version.data()[i] = version[i];
+    for (size_t i = 0; i < version_string.size(); ++i) {
+        game_state.version.data()[i] = version_string[i];
     }
 
-    game_state.version[version.Len()] = '\0';
+    game_state.version[version_string.size()] = '\0';
 
     _one_server.set_game_state(game_state);
 }
@@ -192,6 +152,51 @@ void AOneArcusServer::set_application_instance_online() {
 void AOneArcusServer::set_application_instance_allocated() {
     _one_server.set_application_instance_status(
         OneServerWrapper::ApplicationInstanceStatus::allocated);
+}
+
+void AOneArcusServer::send_reverse_metadata(FString map, FString mode, FString type) {
+    OneServerWrapper::ReverseMetadata data;
+
+    std::string map_string = std::string(TCHAR_TO_UTF8(*map));
+
+    if (codec::value_max_size_null_terminated() < map_string.size() + 1) {
+        UE_LOG(LogTemp, Error, TEXT("map length is too big"));
+        return;
+    }
+
+    for (size_t i = 0; i < map_string.size(); ++i) {
+        data.map.data()[i] = map_string[i];
+    }
+
+    data.map[map_string.size()] = '\0';
+
+    std::string mode_string = std::string(TCHAR_TO_UTF8(*mode));
+
+    if (codec::value_max_size_null_terminated() < mode_string.size() + 1) {
+        UE_LOG(LogTemp, Error, TEXT("mode length is too big"));
+        return;
+    }
+
+    for (size_t i = 0; i < mode_string.size(); ++i) {
+        data.mode.data()[i] = mode_string[i];
+    }
+
+    data.mode[mode_string.size()] = '\0';
+
+    std::string type_string = std::string(TCHAR_TO_UTF8(*type));
+
+    if (codec::value_max_size_null_terminated() < type_string.size() + 1) {
+        UE_LOG(LogTemp, Error, TEXT("type length is too big"));
+        return;
+    }
+
+    for (size_t i = 0; i < type_string.size(); ++i) {
+        data.type.data()[i] = type_string[i];
+    }
+
+    data.type[type_string.size()] = '\0';
+
+    _one_server.send_reverse_metadata(data);
 }
 
 void AOneArcusServer::update() {
@@ -313,4 +318,26 @@ void AOneArcusServer::application_instance_information_callback(OneObjectPtr dat
 
     // Send an applicationInstanceInformationReceived event with the raw payload.
     server->applicationInstanceInformationReceived(object);
+}
+
+void AOneArcusServer::custom_command_callback(OneArrayPtr data, void *userdata) {
+    auto server = reinterpret_cast<AOneArcusServer *>(userdata);
+    if (server == nullptr) {
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: userdata is null"));
+        return;
+    }
+
+    // Creating a UOneArcusArray containing a copy of OneArrayPtr
+    // so it could be used as an Unreal event containing the data.
+    UOneArcusArray *array = NewObject<UOneArcusArray>();
+    OneArrayPtr new_array = array->array();
+
+    OneError err = one_array_copy(data, new_array);
+    if (one_is_error(err)) {
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: failed to copy array"));
+        return;
+    }
+
+    // Send an metaDataReceived event with the raw payload.
+    server->customCommandReceived(array);
 }

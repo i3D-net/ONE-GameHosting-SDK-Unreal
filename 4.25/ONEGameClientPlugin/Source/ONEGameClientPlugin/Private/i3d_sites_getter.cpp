@@ -106,7 +106,7 @@ FString AI3dSitesGetter::site_country(int64 pos) {
         UE_LOG(LogTemp, Error, TEXT("I3D SITES GETTER: failed to get site country"));
         return FString("");
     }
-    FString s(site_country.c_str());
+    FString s(UTF8_TO_TCHAR(site_country.c_str()));
     return s;
 }
 
@@ -127,7 +127,7 @@ FString AI3dSitesGetter::site_dc_location_name(int64 pos) {
                TEXT("I3D SITES GETTER: failed to get site dc location name"));
         return FString("");
     }
-    FString s(site_dc_location_name.c_str());
+    FString s(UTF8_TO_TCHAR(site_dc_location_name.c_str()));
     return s;
 }
 
@@ -138,7 +138,7 @@ FString AI3dSitesGetter::site_hostname(int64 pos) {
                TEXT("I3D SITES GETTER: failed to get site dc site hostname"));
         return FString("");
     }
-    FString s(site_hostname.c_str());
+    FString s(UTF8_TO_TCHAR(site_hostname.c_str()));
     return s;
 }
 
@@ -157,7 +157,7 @@ FString AI3dSitesGetter::site_ipv4(int64 pos, int64 ip_pos) {
         UE_LOG(LogTemp, Error, TEXT("I3D SITES GETTER: failed to get site site ipv4"));
         return FString("");
     }
-    FString s(site_ipv4.c_str());
+    FString s(UTF8_TO_TCHAR(site_ipv4.c_str()));
     return s;
 }
 
@@ -176,7 +176,7 @@ FString AI3dSitesGetter::site_ipv6(int64 pos, int64 ip_pos) {
         UE_LOG(LogTemp, Error, TEXT("I3D SITES GETTER: failed to get site site ipv4"));
         return FString("");
     }
-    FString s(site_ipv6.c_str());
+    FString s(UTF8_TO_TCHAR(site_ipv6.c_str()));
     return s;
 }
 
@@ -222,7 +222,7 @@ void AI3dSitesGetter::http_request(const char *url,
 void AI3dSitesGetter::on_http_completed(FHttpRequestPtr Request,
                                         FHttpResponsePtr Response, bool success) {
     if (success) {
-        _parsing_callback(success, TCHAR_TO_ANSI(*Response->GetContentAsString()),
+        _parsing_callback(success, TCHAR_TO_UTF8(*Response->GetContentAsString()),
                           _parsing_userdata);
     } else {
         _parsing_callback(false, "", _parsing_userdata);

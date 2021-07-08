@@ -54,9 +54,10 @@ void AFakeGame::allocatedPayloadParse(UOneArcusArray *array) {
 
             if (total_number_of_keys != 2) {
                 if (!_quiet)
-                    UE_LOG(LogTemp, Error,
-                           TEXT("ONE ARCUS: expected 2 keys, but received a different "
-                                "number instead"));
+                    UE_LOG(
+                        LogTemp, Error,
+                        TEXT("ONE ARCUS: expected 2 keys, but received %d keys instead"),
+                        total_number_of_keys);
                 return false;
             }
 
@@ -110,9 +111,10 @@ void AFakeGame::metaDataPayloadParse(UOneArcusArray *array) {
 
             if (total_number_of_keys != 3) {
                 if (!_quiet)
-                    UE_LOG(LogTemp, Error,
-                           TEXT("ONE ARCUS: expected 3 keys, but received a different "
-                                "number instead"));
+                    UE_LOG(
+                        LogTemp, Error,
+                        TEXT("ONE ARCUS: expected 3 keys, but received %d keys instead"),
+                        total_number_of_keys);
                 return false;
             }
 
@@ -146,9 +148,9 @@ void AFakeGame::metaDataPayloadParse(UOneArcusArray *array) {
         return;
     }
 
-    FString map_string(map.data());
-    FString mode_string(mode.data());
-    FString type_string(type.data());
+    FString map_string(UTF8_TO_TCHAR(map.data()));
+    FString mode_string(UTF8_TO_TCHAR(mode.data()));
+    FString type_string(UTF8_TO_TCHAR(type.data()));
 
     // Send an allocatedExtracted event with the extracted payload.
     metaDataExtracted(map_string, mode_string, type_string);
@@ -193,7 +195,7 @@ void AFakeGame::hostInformationPayloadParse(UOneArcusObject *object) {
 
     // ... add more field parsing as needed.
 
-    FString server_name_string(server_name.data());
+    FString server_name_string(UTF8_TO_TCHAR(server_name.data()));
 
     hostInformationExtracted(id, server_id, server_name_string);
 }
@@ -238,9 +240,68 @@ void AFakeGame::applicationInstanceInformationPayloadParse(UOneArcusObject *obje
 
     // ... add more field parsing as needed.
 
-    FString fleet_id_string(fleet_id.data());
+    FString fleet_id_string(UTF8_TO_TCHAR(fleet_id.data()));
     FString virtual_string(is_virtual ? "true" : "false");
 
     // Send an applicationInstanceInformation event with the extracted payload.
     applicationInstanceInformationExtracted(fleet_id_string, host_id, is_virtual);
+}
+
+void AFakeGame::customCommandPayloadParse(UOneArcusArray *array) {
+    if (array == nullptr) {
+        UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: array is nullptr"));
+        return;
+    }
+
+    std::array<char, codec::value_max_size_null_terminated()> command;
+    std::array<char, codec::value_max_size_null_terminated()> argument;
+
+    // Optional - the game can require and read allocated keys to configure
+    // the server. This is to mirror the documentation example here:
+    // https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#meta-data
+    auto callback =
+        [&](const size_t total_number_of_keys,
+            const std::array<char, codec::key_max_size_null_terminated()> &key,
+            const std::array<char, codec::value_max_size_null_terminated()> &value) {
+            // Since the allocated fields are optional, one can add and/or remove the
+            // fields being parsed as needed.
+
+            if (total_number_of_keys != 2) {
+                if (!_quiet)
+                    UE_LOG(
+                        LogTemp, Error,
+                        TEXT("ONE ARCUS: expected 2 keys, but received %d keys instead"),
+                        total_number_of_keys);
+                return false;
+            }
+
+            if (std::strncmp(key.data(), "command",
+                             codec::key_max_size_null_terminated()) == 0) {
+                command = value;
+                return true;
+            }
+
+            if (std::strncmp(key.data(), "argument",
+                             codec::key_max_size_null_terminated()) == 0) {
+                argument = value;
+                return true;
+            }
+
+            if (!_quiet) UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: key is not handled"));
+            return false;
+        };
+
+    // Extracting the payload using the previously defined callback.
+    if (!Parsing::extract_key_value_payload(array->array(), callback)) {
+        if (!_quiet)
+            UE_LOG(LogTemp, Error,
+                   TEXT("ONE ARCUS: failed to extract key/value payload"));
+        return;
+    }
+
+    FString command_string(UTF8_TO_TCHAR(command.data()));
+    FString argument_string(UTF8_TO_TCHAR(argument.data()));
+
+    // Send an allocatedExtracted event with the extracted payload.
+    customCommandExtracted(command_string, argument_string);
 }

@@ -67,6 +67,10 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Arcus")
     void set_application_instance_allocated();
 
+    // Send the reverse metadata.
+    UFUNCTION(BlueprintCallable, Category = "Arcus")
+    void send_reverse_metadata(FString map, FString mode, FString type);
+
     // Game state
     // -------------------------------
 
@@ -88,6 +92,9 @@ public:
     UFUNCTION(BlueprintImplementableEvent, Category = "Arcus")
     void applicationInstanceInformationReceived(UOneArcusObject *payload);
 
+    UFUNCTION(BlueprintImplementableEvent, Category = "Arcus")
+    void customCommandReceived(UOneArcusArray *payload);
+
     // Events for received messages with their Arcus SDK types
     // -------------------------------
 
@@ -101,6 +108,7 @@ public:
     static void host_information_callback(OneObjectPtr data, void *userdata);
     static void application_instance_information_callback(OneObjectPtr data,
                                                           void *userdata);
+    static void custom_command_callback(OneArrayPtr data, void *userdata);
 
     // Server callbacks
     // -------------------------------
