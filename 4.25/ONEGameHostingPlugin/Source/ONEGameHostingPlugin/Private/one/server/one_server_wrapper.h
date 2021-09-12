@@ -85,7 +85,7 @@ public:
     void set_game_state(const GameState &);
 
     // As defined in:
-    // https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#applicationinstance-set-status-request
+    // https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#live-state
     enum class ApplicationInstanceStatus { starting = 3, online = 4, allocated = 5 };
 
     // Sets the Arcus application instance status. The game server must set
@@ -127,20 +127,20 @@ public:
     // The allocation request has a optional JSON body. The keys and values are definable
     // by the customer. The current values are matching the payload shown in the
     // documentation at:
-    // https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#allocated-request
+    // https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#allocated
     void set_allocated_callback(
         std::function<void(const OneArrayPtr data, void *userdata)> callback,
         void *userdata);
 
     // The metadate response has a payload as defined at:
-    // https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#meta-data-request
+    // https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#metadata
     void set_metadata_callback(
         std::function<void(const OneArrayPtr data, void *userdata)> callback,
         void *userdata);
 
     // Allows the game server to be notified of an incoming Host Information message.
     // The host information response has a payload as defined at:
-    // https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#host-information-response
+    // https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#host-information
     void set_host_information_callback(
         std::function<void(const OneObjectPtr data, void *userdata)> callback,
         void *userdata);
@@ -148,7 +148,7 @@ public:
     // Allows the game server to be notified of an incoming Application
     // Instance Information message.
     // The application instance information response has a payload as defined at:
-    // https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#applicationinstance-information-response
+    // https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#applicationinstance-information
     void set_application_instance_information_callback(
         std::function<void(const OneObjectPtr data, void *userdata)> callback,
         void *userdata);
@@ -193,8 +193,7 @@ private:
         _application_instance_information_callback;
     void *_application_instance_information_userdata;
 
-    std::function<void(const OneArrayPtr &, void *)>
-        _custom_command_callback;
+    std::function<void(const OneArrayPtr &, void *)> _custom_command_callback;
     void *_custom_command_userdata;
 
     OneArrayPtr _reverse_metadata_data;
