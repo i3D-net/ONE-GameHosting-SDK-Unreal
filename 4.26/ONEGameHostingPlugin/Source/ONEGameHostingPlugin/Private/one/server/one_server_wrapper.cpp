@@ -150,8 +150,7 @@ bool OneServerWrapper::init(unsigned int port) {
         return false;
     }
 
-    err = one_server_set_custom_command_callback(
-        _server, custom_command, this);
+    err = one_server_set_custom_command_callback(_server, custom_command, this);
     if (one_is_error(err)) {
         UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: %s"), *FString(one_error_text(err)));
         return false;
@@ -286,7 +285,8 @@ void OneServerWrapper::send_reverse_metadata(const ReverseMetadata &data) {
     // If the game wishes to send and coordinate the processing of reverse metadata to the
     // ONE Platform, it can add that data here as an object with additional keys. Note
     // that these key are user defined. The one showed here are matching the example in
-    // the online documentation.
+    // the online documentation found here:
+    // https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#reverse-metadata.
 
     OneError err = one_array_clear(_reverse_metadata_data);
     if (one_is_error(err)) {
@@ -542,15 +542,12 @@ void OneServerWrapper::custom_command(void *userdata, void *data) {
 
     if (wrapper->_custom_command_callback == nullptr) {
         if (!wrapper->quiet())
-            UE_LOG(
-                LogTemp, Log,
-                TEXT("ONE ARCUS: custom command callback is nullptr"));
+            UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: custom command callback is nullptr"));
         return;
     }
 
     auto object = reinterpret_cast<OneArrayPtr>(data);
-    wrapper->_custom_command_callback(
-        object, wrapper->_custom_command_userdata);
+    wrapper->_custom_command_callback(object, wrapper->_custom_command_userdata);
 }
 
 }  // namespace one_integration

@@ -101,7 +101,7 @@ void AFakeGame::metaDataPayloadParse(UOneArcusArray *array) {
 
     // Optional - the game can require and read allocated keys to configure
     // the server. This is to mirror the documentation example here:
-    // https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#meta-data
+    // https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#metadata
     auto callback =
         [&](const size_t total_number_of_keys,
             const std::array<char, codec::key_max_size_null_terminated()> &key,
@@ -258,7 +258,7 @@ void AFakeGame::customCommandPayloadParse(UOneArcusArray *array) {
 
     // Optional - the game can require and read allocated keys to configure
     // the server. This is to mirror the documentation example here:
-    // https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#meta-data
+    // https://www.i3d.net/docs/one/odp/Game-Integration/Management-Protocol/Arcus-V2/request-response/#custom-command
     auto callback =
         [&](const size_t total_number_of_keys,
             const std::array<char, codec::key_max_size_null_terminated()> &key,
