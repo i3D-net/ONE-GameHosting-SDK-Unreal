@@ -3,7 +3,7 @@
 
 #include <one/ping/types.h>
 #include <one/ping/error.h>
-#include <one/ping/internal/icmp_socket.h>
+#include <one/ping/internal/udp_socket.h>
 
 namespace i3d {
 namespace ping {
@@ -39,7 +39,7 @@ private:
                                  double &average) const;
     I3dPingError compute_median(const List<int> &history, double &median_time) const;
 
-    IcmpSocket _socket;
+    UdpSocket _socket;
 
     int _last_time;
     unsigned int _total_time;
