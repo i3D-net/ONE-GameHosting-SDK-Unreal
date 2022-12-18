@@ -17,6 +17,7 @@ ONE_UNREAL_MAJOR_VERSION=${1}
 ONE_UNREAL_ENGINE_VERSION=${2}
 ONE_SDK_REPO_DIR=${3}
 ONE_PLUGIN_REPO_DIR=${4}
+ONE_PLUGIN_VERSION=${5}
 
 ONE_SDK_SOURCE_DIR=${ONE_SDK_REPO_DIR}/one/ping
 
@@ -45,6 +46,7 @@ cp -r ${ONE_PLUGIN_TEMPLATE_DIR} ${ONE_PLUGIN_DIR}
 
 # Updating the engine version in the config files.
 sed -i s/ONE_ENGINE_VERSION/${ONE_UNREAL_ENGINE_VERSION}/g ${ONE_PLUGIN_UPLUGIN_FILE}
+sed -i s/ONE_PLUGIN_VERSION/${ONE_PLUGIN_VERSION}/g ${ONE_PLUGIN_UPLUGIN_FILE}
 
 # Copying the sources and headers files from the ONEGameHostingSDK repository.
 

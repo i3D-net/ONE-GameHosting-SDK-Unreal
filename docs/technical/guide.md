@@ -48,7 +48,7 @@ ${PATH_OF_SDK_PLGUIN_REPOSITORY}/tools/update.sh ${UNREAL_MAJOR_VERSION} ${UNREA
 ```
 Note: make sure to omit the trailing slash at the end of the path. For example:
 ```bash
-./tools/update.sh 4.x 4.26 ~/src/one-game-sdk ~/src/one-gamehosting-sdk-unreal
+./tools/update.sh 4.x 4.26 202212 ~/src/one-game-sdk ~/src/one-gamehosting-sdk-unreal
 ```
 4. Commit the changes in the SDK plugin repository.
 
