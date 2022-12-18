@@ -1,3 +1,3 @@
 # ONE GAME Client SDK Version
 
-This plugin uses this [version](https://git.i3d.net/one/ardentblue/one-game-sdk/-/commit/91f493b40ef662b98624961ab2f63bc2a615cff8) of the One Platform SDK repository.
+This plugin uses this [version](https://git.i3d.net/one/ardentblue/one-game-sdk/-/commit/bc7f10df0d6a5dce270bcae45c5471ac4a8f013a) of the One Platform SDK repository.
