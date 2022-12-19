@@ -20,7 +20,7 @@
 			"Name": "ONEGameClientPlugin",
 			"Type": "Runtime",
 			"LoadingPhase": "PreLoadingScreen",
-			"WhitelistPlatforms": [ "Win32", "Win64", "Linux" ]
+			"WhitelistPlatforms": [ "Win64", "Linux" ]
 		}
 	]
 }
