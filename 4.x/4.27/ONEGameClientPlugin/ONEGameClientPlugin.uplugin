@@ -1,0 +1,26 @@
+{
+	"FileVersion": 3,
+	"Version": 202212,
+	"VersionName": "0.9",
+	"FriendlyName": "ONEGameClientPlugin",
+	"Description": "i3D.net Game Client SDK Plugin",
+	"Category": "Code Plugins",
+	"CreatedBy": "https://www.i3d.net",
+	"CreatedByURL": "",
+	"DocsURL": "https://github.com/i3D-net/ONE-GameHosting-SDK-Unreal",
+	"EngineVersion": "4.27",
+	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/6e10729837674003b23c97b80860b50f",
+	"SupportURL": "https://www.i3d.net/support/",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "ONEGameClientPlugin",
+			"Type": "Runtime",
+			"LoadingPhase": "PreLoadingScreen",
+			"WhitelistPlatforms": [ "Win32", "Win64", "Linux" ]
+		}
+	]
+}

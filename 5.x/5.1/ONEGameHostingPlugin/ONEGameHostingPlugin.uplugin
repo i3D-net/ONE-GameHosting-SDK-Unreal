@@ -1,0 +1,26 @@
+{
+	"FileVersion": 3,
+	"Version": 202212,
+	"VersionName": "0.9",
+	"FriendlyName": "ONEGameHostingPlugin",
+	"Description": "i3D.net Game Hosting SDK Plugin",
+	"Category": "Code Plugins",
+	"CreatedBy": "https://www.i3d.net",
+	"CreatedByURL": "",
+	"DocsURL": "https://github.com/i3D-net/ONE-GameHosting-SDK-Unreal",
+	"EngineVersion": "5.1",
+	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/73e31afde4694240acc8f59f53419378",
+	"SupportURL": "https://www.i3d.net/support/",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "ONEGameHostingPlugin",
+			"Type": "Runtime",
+			"LoadingPhase": "PreLoadingScreen",
+			"WhitelistPlatforms": [ "Win64", "Linux" ]
+		}
+	]
+}
