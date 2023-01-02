@@ -6,7 +6,7 @@
 
 ---
 
-The current version of `i3D.net` ONE Game Hosting SDK code used in this plugin is referenced [here](docs/sdk_version.md).
+The current version of `i3D.net` ONE Game Hosting SDK code used in this plugin is referenced [here](docs/sdk_version_4.27.md).
 
 
 ## Overview ##
@@ -14,7 +14,7 @@ The current version of `i3D.net` ONE Game Hosting SDK code used in this plugin i
 The plugin provides Unreal game servers with the ability to communicate over TCP with the i3D.net ONE Platform, for easy and efficient scaling of game servers.
 
 - [Integration guide](#integration-guide) - How to integrate the plugin into a game server.
-- [Sample game](/ArcusExample) - An example of how to use the plugin.
+- [Sample game](/4.27/ArcusExample) - An example of how to use the plugin.
 - [Plugin package](#plugin-package) - How to package the plugin.
 
 The i3D.net Game Hosting SDK works on Windows and Linux.
@@ -43,17 +43,17 @@ Supported platforms:
 5. Relaunch the Unreal Editor and open your game.
 6. Click _Add New > Blueprint Class_ and search for class `One Arcus Server`.
 7. Drag in the new `One Arcus Server` into a persistent level, so that the `One Arcus Server` persist during the whole game life cycle.
-8. Refer to [the arcus example](/ArcusExample) on how to set up and use the component.
+8. Refer to [the arcus example](/4.27/ArcusExample) on how to set up and use the component.
 9. [Test](#how-to-test).
 
-There is an example of a dedicated game server using the `ONE Game Hosting Plugin` available [here](/ArcusExample/README.md).
+There is an example of a dedicated game server using the `ONE Game Hosting Plugin` available [here](/4.27/ArcusExample/README.md).
 
 
 ## <a name="how-to-test"></a> How to test ##
 
 There are two ways to test a Game Server that is running an `One Arcus Server`:
 
-1. The SDK contains a Fake Agent that can connect and simulate a real deployment. Build and run instructions can be found [here](https://github.com/i3D-net/ONE-GameHosting-SDK/tree/master/one/agent).
+1. The SDK contains a Fake Agent that can connect and simulate a real deployment. Build and run instructions can be found [here](https://github.com/i3D-net/ONE-GameHosting-SDK/tree/master/one/fake/arcus/agent).
 2. The Game Server can be uploaded to a live One Development Platform Deployment. See [here](https://www.i3d.net/docs/one/).
 
 > Testing can be performed either in Unreal Editor or on a build running in headless mode.
