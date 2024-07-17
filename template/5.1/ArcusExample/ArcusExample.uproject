@@ -1,0 +1,26 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "ONE_ENGINE_VERSION",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "ArcusExample",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "ONEGameHostingPlugin",
+			"Enabled": true
+		}
+	],
+	"TargetPlatforms": [
+		"WindowsNoEditor",
+		"LinuxNoEditor"
+	]
+}

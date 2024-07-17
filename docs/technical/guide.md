@@ -44,7 +44,7 @@ Follow the following instructions to change the version of the i3D.net ONE Game 
 2. Make sure that the sdk repository has the wanted SDK version checked out.
 3. Run the following script:
 ```bash
-${PATH_OF_SDK_PLGUIN_REPOSITORY}/tools/update.sh ${UNREAL_MAJOR_VERSION} ${UNREAL_ENGINE_VERSION} ${PATH_OF_SDK_REPOSITORY} ${PATH_OF_SDK_PLGIN_REPOSITORY}
+${PATH_OF_SDK_PLGUIN_REPOSITORY}/tools/update.sh ${TEMPLATE_FOLDER_NAME} ${UNREAL_MAJOR.MINOR_VERSION} ${PLUGIN_VERSION} ${PATH_OF_SDK_REPOSITORY} ${PATH_OF_UNREAL_PLUGIN_REPOSITORY}
 ```
 Note: make sure to omit the trailing slash at the end of the path. For example:
 ```bash
