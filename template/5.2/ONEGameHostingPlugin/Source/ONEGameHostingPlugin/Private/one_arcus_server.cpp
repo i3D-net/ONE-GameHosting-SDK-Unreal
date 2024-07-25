@@ -69,10 +69,16 @@ void AOneArcusServer::init(int64 port, int64 players, int64 max_players, FString
     _is_initialized =
         (_one_server.status() == OneServerWrapper::Status::waiting_for_client);
 
+    UE_LOG(LogTemp, Log, TEXT("ONE ARCUS: waiting for connection with agent"));  
+    
     if (!_is_initialized) {
         UE_LOG(LogTemp, Error, TEXT("ONE ARCUS: failed to init one server"));
         return;
     }
+}
+
+bool AOneArcusServer::is_ready() {
+    return (_one_server.status() == OneServerWrapper::Status::ready);
 }
 
 void AOneArcusServer::set_game_state(int64 players, int64 max_players, FString name,
