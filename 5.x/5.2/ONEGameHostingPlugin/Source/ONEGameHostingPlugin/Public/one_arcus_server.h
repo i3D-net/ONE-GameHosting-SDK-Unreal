@@ -42,6 +42,11 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Arcus")
     void shutdown();
 
+    // Retrieve the server status and return true if the server has reached 
+    // the ready-state (is connected to the agent).
+    UFUNCTION(BlueprintCallable, Category = "Arcus")
+    bool is_ready();
+    
     // Life cycle
     // -------------------------------
 
