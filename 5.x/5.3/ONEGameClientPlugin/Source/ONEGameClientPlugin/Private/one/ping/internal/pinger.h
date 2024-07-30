@@ -12,7 +12,7 @@ class Pinger final {
 public:
     Pinger();
     Pinger(const Pinger &) = default;
-    Pinger &operator=(const Pinger &) = default;
+    Pinger &operator=(const Pinger &) = delete;
     ~Pinger() = default;
 
     I3dPingError update();
