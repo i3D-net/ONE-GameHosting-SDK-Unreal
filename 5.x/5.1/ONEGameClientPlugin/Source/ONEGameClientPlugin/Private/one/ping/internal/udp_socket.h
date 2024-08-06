@@ -50,7 +50,7 @@ class UdpSocket final {
 public:
     UdpSocket();
     UdpSocket(const UdpSocket &) = default;
-    UdpSocket &operator=(const UdpSocket &) = default;
+    UdpSocket &operator=(const UdpSocket &) = delete;
     ~UdpSocket() = default;
 
     const String &ipv4() const {

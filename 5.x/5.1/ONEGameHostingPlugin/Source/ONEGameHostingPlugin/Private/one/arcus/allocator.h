@@ -4,6 +4,8 @@
 #include <assert.h>
 #include <functional>
 
+using std::size_t;
+
 namespace i3d {
 namespace one {
 

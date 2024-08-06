@@ -1,7 +1,7 @@
 // Copyright i3D.net, 2021. All Rights Reserved.
 
 #include "one_game_hosting_plugin.h"
-
+#include <one/arcus/c_api.h>
 #include "one_allocator.h"
 
 #define LOCTEXT_NAMESPACE "FONEGameHostingPluginModule"

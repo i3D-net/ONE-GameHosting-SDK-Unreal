@@ -9,8 +9,6 @@
 #include <one/arcus/logger.h>
 #include <one/arcus/types.h>
 
-using namespace std::chrono;
-
 namespace i3d {
 namespace one {
 
@@ -189,7 +187,7 @@ private:
     bool _should_send_status;
 
     ServerCallbacks _callbacks;
-    steady_clock::time_point _last_listen_attempt_time;
+    std::chrono::steady_clock::time_point _last_listen_attempt_time;
 
     Object *_additional_data;
 };
