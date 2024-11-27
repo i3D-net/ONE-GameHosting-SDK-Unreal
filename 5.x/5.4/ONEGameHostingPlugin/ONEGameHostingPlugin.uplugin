@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
 	"Version": 202407,
-	"VersionName": "0.9",
+	"VersionName": "1.0.0",
 	"FriendlyName": "ONEGameHostingPlugin",
 	"Description": "i3D.net Game Hosting SDK Plugin",
 	"Category": "Code Plugins",
