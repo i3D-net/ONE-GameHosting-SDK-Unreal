@@ -1,10 +1,6 @@
 # i3D.net ONE Game Hosting SDK Unreal Plugin #
 
-**Version: v0.9 (Beta)**
-
-> All v1.0 features are complete and ready for integration and use. Customer iteration will determine any final changes before labelling as v1.0.
-
----
+**Version: v1.0.0**
 
 The current version of `i3D.net` ONE Game Hosting SDK code used in this plugin is referenced [here](docs/sdk_version_4.27.md).
 
